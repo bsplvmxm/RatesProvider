@@ -4,7 +4,12 @@ namespace RatesProvider.Recipient;
 
 public class CurrencyRecipient : ICurrencyRecipient
 {
-    public string GetCurrencyPair()
+    public string GetCurrencyPairFromPrimary(string neededCurrency)
+    {
+        throw new NotImplementedException();
+    }
+
+    public string GetCurrencyPairFromSecondary(string neededCurrency)
     {
         throw new NotImplementedException();
     }
