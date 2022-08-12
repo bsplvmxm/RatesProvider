@@ -2,5 +2,6 @@
 
 public interface ICurrencyRecipient
 {
-    CurrencyPair GetCurrencyPair();
+    string GetCurrencyPair();
+    string GetNeededCurruncy();
 }
