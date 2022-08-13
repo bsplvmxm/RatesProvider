@@ -7,4 +7,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RatesProvider.Recipient\RatesProvider.Recipient.csproj" />
+  </ItemGroup>
+
 </Project>

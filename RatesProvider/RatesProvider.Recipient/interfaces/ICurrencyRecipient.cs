@@ -2,6 +2,7 @@
 
 public interface ICurrencyRecipient
 {
-    string GetCurrencyPair();
+    string GetCurrencyPairFromPrimary(string neededCurrency);
+    string GetCurrencyPairFromSecondary(string neededCurrency);
     string GetNeededCurruncy();
 }
