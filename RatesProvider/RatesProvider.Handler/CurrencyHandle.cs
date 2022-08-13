@@ -27,19 +27,18 @@ namespace RatesProvider.Handler
             {
                 var passedCurrencyPairs = _currencyRecipient.GetCurrencyPairFromPrimary(neededCurrencies);
                 _result = _modelBuilder.BuildPair<PrimaryRates>(passedCurrencyPairs);
+                autoEvent.Set();
             }
             catch (ResponseException)
             {
                 var passedCurrencyPairs = _currencyRecipient.GetCurrencyPairFromSecondary(neededCurrencies);
                 _result = _modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs);
+                autoEvent.Set();
             }
-            //finally
-            //{
-            //    throw new Exception(_modelBuilder.ErrorMessage);
-            //}
-
-            autoEvent.Set();
+            finally
+            {
+                throw new Exception((_modelBuilder as ModelBuilder)!.ErrorMessage);
+            }
         }
-
     }
 }

@@ -17,7 +17,7 @@ public class ModelBuilder : IModelBuilder
         {
             error = JsonSerializer.Deserialize<ErrorModel>(jsonString);
             ErrorMessage = $"statusCode: {error!.Code} \n info: {error.Info}";
-            throw new ResponseException($"statusCode: {error!.Code} \n info: {error.Info}");
+            throw new ResponseException(ErrorMessage);
         }
 
         return rates;
