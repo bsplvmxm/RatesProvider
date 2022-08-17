@@ -20,16 +20,14 @@ namespace RatesProvider.Handler
 
         public void Handle(object? sender, ElapsedEventArgs e)
         {
-            var neededCurrencies = _currencyRecipient.GetNeededCurruncy();
-
             try
             {
-                var passedCurrencyPairs = _currencyRecipient.GetCurrencyPairFromPrimary(neededCurrencies);
+                var passedCurrencyPairs = _currencyRecipient.GetCurrencyPairFromPrimary("qwe");
                 _result = _modelBuilder.BuildPair<PrimaryRates>(passedCurrencyPairs);
             }
             catch (ResponseException)
             {
-                var passedCurrencyPairs = _currencyRecipient.GetCurrencyPairFromSecondary(neededCurrencies);
+                var passedCurrencyPairs = _currencyRecipient.GetCurrencyPairFromSecondary("qwe");
                 _result = _modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs);
             }
             catch

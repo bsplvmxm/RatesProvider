@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\RatesProvider.Recipientt\RatesProvider.Recipient.csproj" />
   </ItemGroup>
 
 </Project>
