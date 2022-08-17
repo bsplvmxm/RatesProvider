@@ -2,6 +2,7 @@
 using RatesProvider.Handler.interfaces;
 using RatesProvider.Handler.Models;
 using RatesProvider.Recipient.interfaces;
+using System.Timers;
 
 namespace RatesProvider.Handler
 {
@@ -17,7 +18,7 @@ namespace RatesProvider.Handler
             _currencyRecipient = currencyRecipient;
         }
 
-        public void Handle()
+        public void Handle(object? sender, ElapsedEventArgs e)
         {
             var neededCurrencies = _currencyRecipient.GetNeededCurruncy();
 
@@ -31,9 +32,9 @@ namespace RatesProvider.Handler
                 var passedCurrencyPairs = _currencyRecipient.GetCurrencyPairFromSecondary(neededCurrencies);
                 _result = _modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs);
             }
-            finally
+            catch
             {
-                throw new Exception((_modelBuilder as ModelBuilder)!.ErrorMessage);
+                throw new Exception(_modelBuilder.ErrorMessage);
             }
         }
     }
