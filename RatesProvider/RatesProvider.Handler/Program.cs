@@ -1,6 +1,7 @@
 ﻿using RatesProvider.Handler;
 using RatesProvider.Handler.Models;
 using RatesProvider.Recipient;
+using System.Timers;
 
 //setup
 var modelBuilder = new ModelBuilder();
@@ -12,4 +13,8 @@ var dueTime = 86400000;
 var period = 3600000;
 
 //Handle
-var timer = new Timer(currancyHandle.Handle, autoEvent, dueTime, period);
+timer = new Timer(period);
+
+timer.Elapsed += currancyHandle.Handle();
+timer.AutoReset = true;
+timer.Enabled = true;
