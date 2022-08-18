@@ -1,18 +1,7 @@
-﻿using RatesProvider.Handler;
-using RatesProvider.Handler.Models;
-using RatesProvider.Recipient;
-using Timer = System.Timers.Timer;
+﻿using Microsoft.Extensions.DependencyInjection;
+using RatesProvider.Handler;
+using RatesProvider.Handler.Interfaces;
 
-//setup
-var modelBuilder = new ModelBuilder();
-var currencyRecipient = new CurrencyRecipient();
-var currencyHandle = new CurrencyHandle(modelBuilder, currencyRecipient);
+var host = HostBuilder.CreateHostBuilder().Build();
 
-var period = 3600000;
-
-//Handle
-var timer = new Timer(period);
-
-timer.Elapsed += currencyHandle.Handle();
-timer.AutoReset = true;
-timer.Enabled = true;
+host.Services.GetService<IImplementation>()!.Run();
