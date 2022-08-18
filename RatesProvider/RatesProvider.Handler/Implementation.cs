@@ -1,16 +1,24 @@
-﻿using Timer = System.Timers.Timer;
+﻿using RatesProvider.Handler.Interfaces;
+using Timer = System.Timers.Timer;
 
 namespace RatesProvider.Handler;
-public class Implementation
+public class Implementation : IImplementation
 {
-    public static void Run(CurrencyHandle currencyHandle)
+    ICurrencyHandle _currencyHandle;
+
+    public Implementation(ICurrencyHandle currencyHandle)
+    {
+        _currencyHandle = currencyHandle;
+    }
+
+    public void Run()
     {
         var period = 3600000;
 
         //Handle
         var timer = new Timer(period);
 
-        timer.Elapsed += currencyHandle.Handle;
+        timer.Elapsed += _currencyHandle.Handle;
         timer.AutoReset = true;
         timer.Enabled = true;
     }

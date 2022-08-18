@@ -1,12 +1,13 @@
 ﻿using RatesProvider.Handler.infrastructure;
 using RatesProvider.Handler.interfaces;
+using RatesProvider.Handler.Interfaces;
 using RatesProvider.Handler.Models;
 using RatesProvider.Recipient.interfaces;
 using System.Timers;
 
 namespace RatesProvider.Handler
 {
-    public class CurrencyHandle
+    public class CurrencyHandle : ICurrencyHandle
     {
         private IModelBuilder _modelBuilder;
         private ICurrencyRecipient _currencyRecipient;

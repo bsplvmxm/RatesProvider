@@ -1,9 +1,7 @@
-﻿using RatesProvider.Handler;
-using RatesProvider.Recipient;
+﻿using Microsoft.Extensions.DependencyInjection;
+using RatesProvider.Handler;
+using RatesProvider.Handler.Interfaces;
 
-//setup
-var modelBuilder = new ModelBuilder();
-var currencyRecipient = new CurrencyRecipient();
-var currencyHandle = new CurrencyHandle(modelBuilder, currencyRecipient);
+var host = HostBuilder.CreateHostBuilder().Build();
 
-Implementation.Run(currencyHandle);
+host.Services.GetService<IImplementation>()!.Run();
