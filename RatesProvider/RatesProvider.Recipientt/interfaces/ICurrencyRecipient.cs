@@ -2,6 +2,6 @@
 
 public interface ICurrencyRecipient
 {
-    string GetCurrencyPairFromPrimary(string neededCurrency);
+    Task<string> GetCurrencyPairFromPrimary(string neededCurrency);
     string GetCurrencyPairFromSecondary(string neededCurrency);
 }
