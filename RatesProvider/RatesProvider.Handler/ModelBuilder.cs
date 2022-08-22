@@ -14,6 +14,7 @@ public class ModelBuilder : IModelBuilder
         {
             PropertyNameCaseInsensitive = true
         };
+
         var rates = JsonSerializer.Deserialize<T>(jsonString, options);
         ErrorModel? error;
 

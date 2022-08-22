@@ -15,7 +15,7 @@ public class Implementation : IImplementation
     public async Task Run()
     {
 
-        var period = 6000;
+        var period = 15000;
 
         //Handle
         var timer = new Timer(period);
