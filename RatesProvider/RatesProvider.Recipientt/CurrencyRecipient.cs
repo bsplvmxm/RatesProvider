@@ -7,10 +7,13 @@ namespace RatesProvider.Recipient;
 public class CurrencyRecipient : ICurrencyRecipient
 {
     private static readonly HttpClient _httpClient = new HttpClient();
-    public async Task<string> GetCurrencyPairFromPrimary(Rates source)
+
+    public CurrencyRecipient()
     {
         _httpClient.DefaultRequestHeaders.Add("apikey", "IQVeyd6CCjX7knaIZAHSWkEWH0VF6Dm8");
-
+    }
+    public async Task<string> GetCurrencyPairFromPrimary(Rates source)
+    {
         var stringCurrency = _httpClient
             .GetStringAsync("https://api.apilayer.com/currency_data/live?source=USD&currencies=RUB,EUR,JPY,AMD,BGN,RSD");
         var currency = await stringCurrency;
