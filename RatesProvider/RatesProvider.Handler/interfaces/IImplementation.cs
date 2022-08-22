@@ -2,5 +2,5 @@
 
 public interface IImplementation
 {
-    void Run();
+   Task Run();
 }

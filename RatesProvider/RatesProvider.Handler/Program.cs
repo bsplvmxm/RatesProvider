@@ -4,4 +4,9 @@ using RatesProvider.Handler.Interfaces;
 
 var host = HostBuilder.CreateHostBuilder().Build();
 
-host.Services.GetService<IImplementation>()!.Run();
+await host.Services.GetService<IImplementation>()!.Run();
+
+while (true)
+{
+    Thread.Sleep(10000);
+}

@@ -2,5 +2,5 @@
 
 public class PrimaryRates : AbstractRates
 {
-    public Dictionary<string, decimal> Rates { get; set; }
+    public Dictionary<string, decimal> Quotes { get; set; }
 }
