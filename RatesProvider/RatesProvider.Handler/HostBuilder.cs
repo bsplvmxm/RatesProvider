@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 using RatesProvider.Handler.interfaces;
 using RatesProvider.Handler.Interfaces;
 using RatesProvider.Recipient;
-using RatesProvider.Recipient.interfaces;
+using RatesProvider.Recipient.Interfaces;
 
 namespace RatesProvider.Handler;
 

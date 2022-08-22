@@ -2,7 +2,7 @@
 using RatesProvider.Handler.interfaces;
 using RatesProvider.Handler.Interfaces;
 using RatesProvider.Handler.Models;
-using RatesProvider.Recipient.interfaces;
+using RatesProvider.Recipient.Interfaces;
 using System.Timers;
 
 namespace RatesProvider.Handler
@@ -21,16 +21,24 @@ namespace RatesProvider.Handler
 
         public async Task HandleAsync(object? sender, ElapsedEventArgs e)
         {
+            Console.WriteLine("Go\n");
             try
             {
-                var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromPrimary("qwe");
+                var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromPrimary(Recipient.Enums.Rates.RUB);
                 _result = _modelBuilder.BuildPair<PrimaryRates>(passedCurrencyPairs);
                 Console.WriteLine(((PrimaryRates)_result).Quotes["USDRUB"]);
             }
             catch (ResponseException)
             {
-                var passedCurrencyPairs = _currencyRecipient.GetCurrencyPairFromSecondary("qwe");
+                var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromSecondary(Recipient.Enums.Rates.RUB);
                 _result = _modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs);
+                Console.WriteLine(((SecondaryRates)_result).Data["USDRUB"]);
+            }
+            catch (HttpRequestException)
+            {
+                var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromSecondary(Recipient.Enums.Rates.RUB);
+                _result = _modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs);
+                Console.WriteLine(((SecondaryRates)_result).Data["USDRUB"]);
             }
             catch (Exception msg)
             {
