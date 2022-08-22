@@ -1,4 +1,5 @@
-﻿using RatesProvider.Recipient.interfaces;
+﻿using RatesProvider.Recipient.Interfaces;
+using RatesProvider.Recipient.Enums;
 using System.Net.Http.Headers;
 
 namespace RatesProvider.Recipient;
@@ -6,21 +7,23 @@ namespace RatesProvider.Recipient;
 public class CurrencyRecipient : ICurrencyRecipient
 {
     private static readonly HttpClient _httpClient = new HttpClient();
-    public async Task<string> GetCurrencyPairFromPrimary(string neededCurrency)
+    public async Task<string> GetCurrencyPairFromPrimary(Rates source, string neededCurrency)
     {
-        _httpClient.DefaultRequestHeaders.Accept.Clear();
-        _httpClient.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
-        _httpClient.DefaultRequestHeaders.Add("apikey", "mbuKZX6GWcumRQ7KGgsw0FWAQ4IRiTmR");
+        _httpClient.DefaultRequestHeaders.Add("apikey", "IQVeyd6CCjX7knaIZAHSWkEWH0VF6Dm8");
 
-        var stringTask = _httpClient.GetStringAsync("https://api.apilayer.com/currency_data/live?source=USD&currencies=RUB,EUR,JPY,AMD,BGN,RSD");
-        var msg = await stringTask;
+        var stringCurrency = _httpClient
+            .GetStringAsync("https://api.apilayer.com/currency_data/live?source=USD&currencies=RUB,EUR,JPY,AMD,BGN,RSD");
+        var currency = await stringCurrency;
 
-        return msg;
+        return currency;
     }
 
-    public string GetCurrencyPairFromSecondary(string neededCurrency)
+    public async Task<string> GetCurrencyPairFromSecondary(Rates source, string neededCurrency)
     {
-        throw new NotImplementedException();
+        var stringCurrency = _httpClient
+            .GetStringAsync("https://currate.ru/api/?get=rates&pairs=USDRUB,USDEUR,USDJPY,USDAMD,USDBGN,USDRSD&key=a9f81693d8196acd20378dba8ceff0db");
+        var currency = await stringCurrency;
+
+        return currency;
     }
 }
