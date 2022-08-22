@@ -1,4 +1,5 @@
 ﻿using RatesProvider.Handler.Interfaces;
+using System.Timers;
 using Timer = System.Timers.Timer;
 
 namespace RatesProvider.Handler;
@@ -11,15 +12,19 @@ public class Implementation : IImplementation
         _currencyHandle = currencyHandle;
     }
 
-    public void Run()
+    public async Task Run()
     {
-        var period = 3600000;
+
+        var period = 6000;
 
         //Handle
         var timer = new Timer(period);
 
-        timer.Elapsed += _currencyHandle.Handle;
+        await _currencyHandle.HandleAsync(this, EventArgs.Empty as ElapsedEventArgs);
+
+        timer.Elapsed += async (s, e) => await _currencyHandle.HandleAsync(s, e);
         timer.AutoReset = true;
-        timer.Enabled = true;
+        timer.Start();
+        
     }
 }

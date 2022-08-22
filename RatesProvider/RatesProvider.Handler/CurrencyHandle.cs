@@ -19,21 +19,22 @@ namespace RatesProvider.Handler
             _currencyRecipient = currencyRecipient;
         }
 
-        public void Handle(object? sender, ElapsedEventArgs e)
+        public async Task HandleAsync(object? sender, ElapsedEventArgs e)
         {
             try
             {
-                var passedCurrencyPairs = _currencyRecipient.GetCurrencyPairFromPrimary("qwe");
+                var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromPrimary("qwe");
                 _result = _modelBuilder.BuildPair<PrimaryRates>(passedCurrencyPairs);
+                Console.WriteLine(((PrimaryRates)_result).Quotes["USDRUB"]);
             }
             catch (ResponseException)
             {
                 var passedCurrencyPairs = _currencyRecipient.GetCurrencyPairFromSecondary("qwe");
                 _result = _modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs);
             }
-            catch
+            catch (Exception msg)
             {
-                throw new Exception(_modelBuilder.ErrorMessage);
+                Console.WriteLine(msg);
             }
         }
     }

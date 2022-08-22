@@ -4,5 +4,5 @@ namespace RatesProvider.Handler.Interfaces;
 
 public interface ICurrencyHandle
 {
-    void Handle(object? sender, ElapsedEventArgs e);
+    Task HandleAsync(object? sender, ElapsedEventArgs e);
 }

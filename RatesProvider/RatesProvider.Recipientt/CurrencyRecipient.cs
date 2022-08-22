@@ -13,7 +13,8 @@ public class CurrencyRecipient : ICurrencyRecipient
             new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
         _httpClient.DefaultRequestHeaders.Add("apikey", "mbuKZX6GWcumRQ7KGgsw0FWAQ4IRiTmR");
 
-        var stringTask = _httpClient.GetStringAsync("https://api.apilayer.com/currency_data/live?source=USD&currencies=RUB,EUR,JPY,AMD,BGN,RSD");
+        var stringTask = _httpClient
+            .GetStringAsync("https://api.apilayer.com/currency_data/live?source=USD&currencies=RUB,EUR,JPY,AMD,BGN,RSD");
         var msg = await stringTask;
 
         return msg;
