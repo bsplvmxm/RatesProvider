@@ -1,4 +1,5 @@
 ﻿using RatesProvider.Handler.Interfaces;
+using RatesProvider.Recipient.Infrastructure;
 using System.Timers;
 using Timer = System.Timers.Timer;
 
@@ -15,7 +16,7 @@ public class Implementation : IImplementation
     public async Task Run()
     {
 
-        var period = 15000;
+        var period = Convert.ToInt32(Environment.GetEnvironmentVariable(EnvironmentVirable.Period, EnvironmentVariableTarget.Machine));
 
         //Handle
         var timer = new Timer(period);
