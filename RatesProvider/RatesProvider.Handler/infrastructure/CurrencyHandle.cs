@@ -2,6 +2,7 @@
 using RatesProvider.Handler.interfaces;
 using RatesProvider.Handler.Interfaces;
 using RatesProvider.Handler.Models;
+using RatesProvider.Recipient.Exceptions;
 using RatesProvider.Recipient.Interfaces;
 using System.Timers;
 
@@ -28,7 +29,7 @@ namespace RatesProvider.Handler
                 _result = _modelBuilder.BuildPair<PrimaryRates>(passedCurrencyPairs);
                 Console.WriteLine(((PrimaryRates)_result).Quotes["USDRUB"]);
             }
-            catch (ResponseException)
+            catch (BuildException)
             {
                 var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromSecondary(Recipient.Enums.Rates.RUB);
                 _result = _modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs);
