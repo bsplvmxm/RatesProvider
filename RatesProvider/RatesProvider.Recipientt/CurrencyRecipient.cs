@@ -1,6 +1,5 @@
 ﻿using RatesProvider.Recipient.Interfaces;
 using RatesProvider.Recipient.Enums;
-using System.Net.Http.Headers;
 using RatesProvider.Recipient.Infrastructure;
 
 namespace RatesProvider.Recipient;
