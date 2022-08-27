@@ -1,4 +1,4 @@
-﻿namespace RatesProvider.Handler.interfaces;
+﻿namespace RatesProvider.Handler.Interfaces;
 
 public interface IModelBuilder
 {

@@ -1,4 +1,4 @@
-﻿using RatesProvider.Handler.interfaces;
+﻿using RatesProvider.Handler.Interfaces;
 using RatesProvider.Recipient.Exceptions;
 using RatesProvider.Recipient.Infrastructure;
 using System.Text.Json;
