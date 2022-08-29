@@ -6,13 +6,13 @@ using System.Timers;
 
 namespace RatesProvider.Handler
 {
-    public class CurrencyHandle : ICurrencyHandle
+    public class CurrencyHandler : ICurrencyHandler
     {
-        private IModelBuilder _modelBuilder;
-        private ICurrencyRecipient _currencyRecipient;
-        private AbstractRates _result;
+        private IRatesBuilder _modelBuilder;
+        private IRatesGetter _currencyRecipient;
+        private CurrencyRates _result;
 
-        public CurrencyHandle(IModelBuilder modelbuilder, ICurrencyRecipient currencyRecipient)
+        public CurrencyHandler(IRatesBuilder modelbuilder, IRatesGetter currencyRecipient)
         {
             _modelBuilder = modelbuilder;
             _currencyRecipient = currencyRecipient;
@@ -23,11 +23,12 @@ namespace RatesProvider.Handler
             Console.WriteLine("Go\n");
             try
             {
+                // retry policy must be applied for both primary and secondary sources
                 var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromPrimary(Recipient.Enums.Rates.RUB);
                 _result = _modelBuilder.BuildPair<PrimaryRates>(passedCurrencyPairs);
                 Console.WriteLine(((PrimaryRates)_result).Quotes["USDRUB"]);
             }
-            catch (BuildException)
+            catch (RatesBuildException)
             {
                 var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromSecondary(Recipient.Enums.Rates.RUB);
                 _result = _modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs);

@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace RatesProvider.Handler;
 
-public class ModelBuilder : IModelBuilder
+public class RatesBuilder : IRatesBuilder
 {
     public T BuildPair<T>(string jsonString)
     {
@@ -17,7 +17,7 @@ public class ModelBuilder : IModelBuilder
         var rates = JsonSerializer.Deserialize<T>(jsonString, options);
 
         if (rates is null)
-            throw new BuildException(ErrorMessage.BuildException);
+            throw new RatesBuildException(ErrorMessage.RatesBuildException);
 
         return rates;
     }

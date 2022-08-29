@@ -18,9 +18,9 @@ public class HostBuilder
         })
         .ConfigureServices((context, services) =>
         {
-            services.AddScoped<IModelBuilder, ModelBuilder>();
-            services.AddScoped<ICurrencyRecipient, CurrencyRecipient>();
-            services.AddScoped<ICurrencyHandle, CurrencyHandle>();
+            services.AddScoped<IRatesBuilder, RatesBuilder>();
+            services.AddScoped<IRatesGetter, RatesGetter>();
+            services.AddScoped<ICurrencyHandler, CurrencyHandler>();
             services.AddScoped<IImplementation, Implementation>();
         });
 

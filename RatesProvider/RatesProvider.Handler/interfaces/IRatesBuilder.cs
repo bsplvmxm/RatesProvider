@@ -1,6 +1,6 @@
 ﻿namespace RatesProvider.Handler.Interfaces;
 
-public interface IModelBuilder
+public interface IRatesBuilder
 {
     T BuildPair<T>(string jsonString);
 }

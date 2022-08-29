@@ -6,9 +6,9 @@ using Timer = System.Timers.Timer;
 namespace RatesProvider.Handler;
 public class Implementation : IImplementation
 {
-    ICurrencyHandle _currencyHandle;
+    ICurrencyHandler _currencyHandle;
 
-    public Implementation(ICurrencyHandle currencyHandle)
+    public Implementation(ICurrencyHandler currencyHandle)
     {
         _currencyHandle = currencyHandle;
     }

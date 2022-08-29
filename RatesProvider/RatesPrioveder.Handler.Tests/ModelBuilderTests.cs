@@ -9,11 +9,11 @@ namespace RatesPrioveder.Handler.Tests;
 
 public class ModelBuilderTests
 {
-    private IModelBuilder _sut;
+    private IRatesBuilder _sut;
 
     public void SetUp()
     {
-        _sut = new ModelBuilder();
+        _sut = new RatesBuilder();
     }
 
     [Fact]
@@ -21,7 +21,7 @@ public class ModelBuilderTests
     {
         SetUp();
 
-        var passedJsonString = "{success: true, timestamp: 1661181484, source: USD, quotes: { USDRUB: 59.874502, USDEUR: 1.004425, }}";
+        var passedJsonString = "{\"success\": true, \"timestamp\": 1661181484, \"source\": \"USD\", \"quotes\": { \"USDRUB\": 59.874502, \"USDEUR\": 1.004425 }}";
 
         var expectedModel = new PrimaryRates()
         {
@@ -71,6 +71,6 @@ public class ModelBuilderTests
 
         var passedJsonString = "{success: true, timestamp: 1661181484, source: USD, rateList: { USDRUB: 59.874502, USDEUR: 1.004425, }}";
 
-        Assert.Throws<BuildException>(() => _sut.BuildPair<PrimaryRates>(passedJsonString));
+        Assert.Throws<RatesBuildException>(() => _sut.BuildPair<PrimaryRates>(passedJsonString));
     }
 }
