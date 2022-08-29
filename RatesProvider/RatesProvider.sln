@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RatesProvider.Handler", "Ra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RatesProvider.Recipient", "RatesProvider.Recipientt\RatesProvider.Recipient.csproj", "{67785BF9-B2E2-42F7-893A-0DE8237700FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RatesPrioveder.Handler.Tests", "RatesPrioveder.Handler.Tests\RatesPrioveder.Handler.Tests.csproj", "{95595141-DB11-4C41-B437-AC65E2B973B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RatesProvider.Handler.Tests", "RatesPrioveder.Handler.Tests\RatesProvider.Handler.Tests.csproj", "{95595141-DB11-4C41-B437-AC65E2B973B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
