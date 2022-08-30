@@ -1,5 +1,6 @@
 ﻿namespace RatesProvider.Handler.Models;
 
-public abstract class CurrencyRates
+public  class CurrencyRates
 {
+    public Dictionary<string, decimal> Rates;
 }

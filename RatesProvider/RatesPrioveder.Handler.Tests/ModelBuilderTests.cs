@@ -45,7 +45,7 @@ public class ModelBuilderTests
     {
         SetUp();
 
-        var passedJsonString = "{\n success: true,\n timestamp: 1661181484,\n source: USD,\n quotes:\n { USDRUB: 59.874502, USDEUR: 1.004425 }\n}";
+        var passedJsonString = "{\"success\": true, \"timestamp\": 1661181484, \"source\": \"USD\", \"data\": { \"USDRUB\": \"59.874502\", \"USDEUR\": \"1.004425\" }}";
 
         var expectedModel = new SecondaryRates()
         {
@@ -69,8 +69,37 @@ public class ModelBuilderTests
     {
         SetUp();
 
-        var passedJsonString = "{success: true, timestamp: 1661181484, source: USD, rateList: { USDRUB: 59.874502, USDEUR: 1.004425, }}";
+        var passedJsonString = "{\"success\": true, \"timestamp\": 1661181484, \"source\": \"USD\", \"data\": { \"USDRUB\": \"59.874502\", \"USDEUR\": \"1.004425\" }}";
 
         Assert.Throws<RatesBuildException>(() => _sut.BuildPair<PrimaryRates>(passedJsonString));
+    }
+
+    [Fact]
+    public void ConvertToDecimalTest_WhenCalled_ReturnCorrectDictionary()
+    {
+        SetUp();
+
+        var expectedModel = new PrimaryRates()
+        {
+            Quotes = new() {
+                { "USDRUB", (decimal)59.874502 },
+                { "USDEUR", (decimal)1.004425 }
+            }
+        };
+
+        var ModelToConvert = new SecondaryRates()
+        {
+            Data = new() {
+                { "USDRUB", "59.874502" },
+                { "USDEUR", "1.004425" }
+            }
+        };
+
+        var actualDictionary = _sut.ConvertToDecimal(ModelToConvert.Data);
+
+        foreach (var pair in expectedModel.Quotes)
+        {
+            Assert.Equal(pair.Value, actualDictionary[pair.Key]);
+        }
     }
 }

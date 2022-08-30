@@ -25,17 +25,15 @@ public class RatesGetter : IRatesGetter
     {
         var stringCurrency = _httpClient
             .GetStringAsync($"{Constant.PrimaryApiLink}{_settingsProvider.GetBaseCurrency()}{Constant.PrimaryApiParamCurrencies}{_settingsProvider.GetNeededCurrencies(false)}");
-        var currency = await stringCurrency;
 
-        return currency;
+        return await stringCurrency;
     }
 
     public async Task<string> GetCurrencyPairFromSecondary()
     {
         var stringCurrency = _httpClient
             .GetStringAsync($"{Constant.SecondaryApiLink}{_settingsProvider.GetNeededCurrencies(true)}{Constant.SecondaryApiParamKey}{_secondaryApiKey}");
-        var currency = await stringCurrency;
 
-        return currency;
+        return await stringCurrency;
     }
 }

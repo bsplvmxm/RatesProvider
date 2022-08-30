@@ -16,6 +16,7 @@ namespace RatesProvider.Handler
         {
             _modelBuilder = modelbuilder;
             _currencyRecipient = currencyRecipient;
+            _result = new CurrencyRates();
         }
 
         public async Task HandleAsync(object? sender, ElapsedEventArgs e)
@@ -24,17 +25,17 @@ namespace RatesProvider.Handler
             {
                 // retry policy must be applied for both primary and secondary sources
                 var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromPrimary();
-                _result = _modelBuilder.BuildPair<PrimaryRates>(passedCurrencyPairs);
+                _result.Rates = _modelBuilder.BuildPair<PrimaryRates>(passedCurrencyPairs).Quotes;
             }
             catch (RatesBuildException)
             {
                 var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromSecondary();
-                _result = _modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs);
+                _result.Rates = _modelBuilder.ConvertToDecimal(_modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs).Data);
             }
             catch (HttpRequestException)
             {
                 var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromSecondary();
-                _result = _modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs);
+                _result.Rates = _modelBuilder.ConvertToDecimal(_modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs).Data);
             }
             catch (Exception msg)
             {
