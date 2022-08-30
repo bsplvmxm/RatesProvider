@@ -2,7 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RatesProvider.Handler.Interfaces;
-using RatesProvider.Recipient;
+using RatesProvider.RatesGetter.Infrastructure;
+using RatesProvider.RatesGetter.Interfaces;
 using RatesProvider.Recipient.Interfaces;
 
 namespace RatesProvider.Handler;
@@ -19,9 +20,10 @@ public class HostBuilder
         .ConfigureServices((context, services) =>
         {
             services.AddScoped<IRatesBuilder, RatesBuilder>();
-            services.AddScoped<IRatesGetter, RatesGetter>();
+            services.AddScoped<IRatesGetter, Recipient.RatesGetter>();
             services.AddScoped<ICurrencyHandler, CurrencyHandler>();
             services.AddScoped<IImplementation, Implementation>();
+            services.AddScoped<ISettingsProvider, SettingsProvider>();
         });
 
         return hostBuilder;

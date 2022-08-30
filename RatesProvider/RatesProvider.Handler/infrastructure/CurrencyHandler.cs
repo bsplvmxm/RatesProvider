@@ -20,25 +20,21 @@ namespace RatesProvider.Handler
 
         public async Task HandleAsync(object? sender, ElapsedEventArgs e)
         {
-            Console.WriteLine("Go\n");
             try
             {
                 // retry policy must be applied for both primary and secondary sources
-                var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromPrimary(Recipient.Enums.Rates.RUB);
+                var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromPrimary();
                 _result = _modelBuilder.BuildPair<PrimaryRates>(passedCurrencyPairs);
-                Console.WriteLine(((PrimaryRates)_result).Quotes["USDRUB"]);
             }
             catch (RatesBuildException)
             {
-                var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromSecondary(Recipient.Enums.Rates.RUB);
+                var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromSecondary();
                 _result = _modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs);
-                Console.WriteLine(((SecondaryRates)_result).Data["USDRUB"]);
             }
             catch (HttpRequestException)
             {
-                var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromSecondary(Recipient.Enums.Rates.RUB);
+                var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromSecondary();
                 _result = _modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs);
-                Console.WriteLine(((SecondaryRates)_result).Data["USDRUB"]);
             }
             catch (Exception msg)
             {

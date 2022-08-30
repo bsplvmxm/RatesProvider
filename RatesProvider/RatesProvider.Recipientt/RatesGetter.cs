@@ -1,6 +1,7 @@
 ﻿using RatesProvider.Recipient.Interfaces;
-using RatesProvider.Recipient.Enums;
 using RatesProvider.Recipient.Infrastructure;
+using RatesProvider.RatesGetter.Infrastructure;
+using RatesProvider.RatesGetter.Interfaces;
 
 namespace RatesProvider.Recipient;
 
@@ -9,30 +10,30 @@ public class RatesGetter : IRatesGetter
     private readonly HttpClient _httpClient;
     private readonly string  _primaryApiKey;
     private readonly string _secondaryApiKey;
+    private ISettingsProvider _settingsProvider;
 
-    public RatesGetter()
+    public RatesGetter(ISettingsProvider settingsProvider)
     {
         _httpClient = new HttpClient();
-        // _primaryApiKey = SettingsProvider.GetSetting(EnvironmentVirable.PrimaryApiKey);
-        _primaryApiKey = Environment.GetEnvironmentVariable(EnvironmentVirable.PrimaryApiKey, EnvironmentVariableTarget.Machine)!;
-        _secondaryApiKey = Environment.GetEnvironmentVariable(EnvironmentVirable.SecondaryApiKey, EnvironmentVariableTarget.Machine)!;
-        _httpClient.DefaultRequestHeaders.Add("apikey", _primaryApiKey);
+        _settingsProvider = settingsProvider;
+        _primaryApiKey = _settingsProvider!.GetEnvironmentVirableValue(EnvironmentVirable.PrimaryApiKey);
+        _secondaryApiKey = _settingsProvider.GetEnvironmentVirableValue(EnvironmentVirable.SecondaryApiKey);
+        _httpClient.DefaultRequestHeaders.Add(Constant.HeaderKeyWord, _primaryApiKey);
     }
 
-    public async Task<string> GetCurrencyPairFromPrimary(Rates source)
+    public async Task<string> GetCurrencyPairFromPrimary()
     {
-        // "base currency" must be a setting
         var stringCurrency = _httpClient
-            .GetStringAsync("https://api.apilayer.com/currency_data/live?source=USD&currencies=RUB,EUR,JPY,AMD,BGN,RSD");
+            .GetStringAsync($"{Constant.PrimaryApiLink}{_settingsProvider.GetBaseCurrency()}{Constant.PrimaryApiParamCurrencies}{_settingsProvider.GetNeededCurrencies(false)}");
         var currency = await stringCurrency;
 
         return currency;
     }
 
-    public async Task<string> GetCurrencyPairFromSecondary(Rates source)
+    public async Task<string> GetCurrencyPairFromSecondary()
     {
         var stringCurrency = _httpClient
-            .GetStringAsync($"https://currate.ru/api/?get=rates&pairs=USDRUB,USDEUR,USDJPY,USDAMD,USDBGN,USDRSD&key={_secondaryApiKey}");
+            .GetStringAsync($"{Constant.SecondaryApiLink}{_settingsProvider.GetNeededCurrencies(true)}{Constant.SecondaryApiParamKey}{_secondaryApiKey}");
         var currency = await stringCurrency;
 
         return currency;
