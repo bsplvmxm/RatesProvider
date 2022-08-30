@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RatesProvider.Recipientt\RatesProvider.Recipient.csproj" />
+    <ProjectReference Include="..\RatesProvider.Recipientt\RatesProvider.RatesGetter.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@
 
 namespace RatesProvider.Handler.Interfaces;
 
-public interface ICurrencyHandle
+public interface ICurrencyHandler
 {
     Task HandleAsync(object? sender, ElapsedEventArgs e);
 }
