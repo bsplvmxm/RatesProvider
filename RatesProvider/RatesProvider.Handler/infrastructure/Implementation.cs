@@ -10,9 +10,9 @@ public class Implementation : IImplementation
 {
     ISettingsProvider _settingsProvider;
     ICurrencyHandler _currencyHandle;
-    ILogger _logger;
+    ILogger<Implementation> _logger;
 
-    public Implementation(ICurrencyHandler currencyHandle, ILogger logger, ISettingsProvider settingsProvider)
+    public Implementation(ICurrencyHandler currencyHandle, ILogger<Implementation> logger, ISettingsProvider settingsProvider)
     {
         _currencyHandle = currencyHandle;
         _logger = logger;

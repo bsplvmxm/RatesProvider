@@ -12,9 +12,9 @@ namespace RatesProvider.Handler
         private IRatesBuilder _modelBuilder;
         private IRatesGetter _currencyRecipient;
         private CurrencyRates _result;
-        private readonly ILogger _logger;
+        private readonly ILogger<CurrencyHandler> _logger;
 
-        public CurrencyHandler(IRatesBuilder modelbuilder, IRatesGetter currencyRecipient, ILogger logger)
+        public CurrencyHandler(IRatesBuilder modelbuilder, IRatesGetter currencyRecipient, ILogger<CurrencyHandler> logger)
         {
             _modelBuilder = modelbuilder;
             _currencyRecipient = currencyRecipient;
