@@ -30,11 +30,10 @@ namespace RatesProvider.Handler
                   .Execute(_currencyRecipient.GetCurrencyPairFromPrimary);
             try
             {
-                // retry policy must be applied for both primary and secondary sources
                 _logger.LogInformation("Try handle primary api's response");
 
                 var passedCurrencyPairs = await Policy.Handle<Exception>()
-                  .Retry(3, (e, i) => Console.WriteLine(e.Message))
+                  .Retry(3, (e, i) => _logger.LogInformation(e.Message))
                   .Execute(_currencyRecipient.GetCurrencyPairFromPrimary);
 
                 _result.Rates = _modelBuilder.BuildPair<PrimaryRates>(passedCurrencyPairs).Quotes;
@@ -46,7 +45,7 @@ namespace RatesProvider.Handler
                     _logger.LogInformation("Try handle secondary api's response");
 
                     var passedCurrencyPairs = await Policy.Handle<Exception>()
-                  .Retry(3, (e, i) => Console.WriteLine(e.Message))
+                  .Retry(3, (e, i) => _logger.LogInformation(e.Message))
                   .Execute(_currencyRecipient.GetCurrencyPairFromSecondary);
 
                     _result.Rates = _modelBuilder.ConvertToDecimal(_modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs).Data);
