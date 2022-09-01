@@ -31,21 +31,18 @@ namespace RatesProvider.Handler
                 var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromPrimary();
                 _result.Rates = _modelBuilder.BuildPair<PrimaryRates>(passedCurrencyPairs).Quotes;
             }
-            catch (RatesBuildException)
+            catch (Exception ex)
             {
-                _logger.LogInformation("Try handle secondary api's response");
-                var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromSecondary();
-                _result.Rates = _modelBuilder.ConvertToDecimal(_modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs).Data);
-            }
-            catch (HttpRequestException)
-            {
-                _logger.LogInformation("Try handle secondary api's response");
-                var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromSecondary();
-                _result.Rates = _modelBuilder.ConvertToDecimal(_modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs).Data);
-            }
-            catch (Exception msg)
-            {
-                _logger.LogInformation("Unprocessable response: {0}", msg);
+                if (ex is RatesBuildException || ex is HttpRequestException)
+                {
+                    _logger.LogInformation("Try handle secondary api's response");
+                    var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromSecondary();
+                    _result.Rates = _modelBuilder.ConvertToDecimal(_modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs).Data);
+                }
+                else
+                {
+                    _logger.LogInformation("Unprocessable response: {0}", ex);
+                }
             }
         }
     }
