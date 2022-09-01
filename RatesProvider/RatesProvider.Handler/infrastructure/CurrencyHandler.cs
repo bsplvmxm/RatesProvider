@@ -4,6 +4,7 @@ using RatesProvider.Recipient.Exceptions;
 using RatesProvider.Recipient.Interfaces;
 using System.Timers;
 using Microsoft.Extensions.Logging;
+using Polly;
 
 namespace RatesProvider.Handler
 {
@@ -24,11 +25,18 @@ namespace RatesProvider.Handler
 
         public async Task HandleAsync(object? sender, ElapsedEventArgs e)
         {
+            var a = Policy.Handle<Exception>()
+                  .Retry(3, (e, i) => Console.WriteLine(e.Message))
+                  .Execute(_currencyRecipient.GetCurrencyPairFromPrimary);
             try
             {
                 // retry policy must be applied for both primary and secondary sources
                 _logger.LogInformation("Try handle primary api's response");
-                var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromPrimary();
+
+                var passedCurrencyPairs = await Policy.Handle<Exception>()
+                  .Retry(3, (e, i) => Console.WriteLine(e.Message))
+                  .Execute(_currencyRecipient.GetCurrencyPairFromPrimary);
+
                 _result.Rates = _modelBuilder.BuildPair<PrimaryRates>(passedCurrencyPairs).Quotes;
             }
             catch (Exception ex)
@@ -36,7 +44,11 @@ namespace RatesProvider.Handler
                 if (ex is RatesBuildException || ex is HttpRequestException)
                 {
                     _logger.LogInformation("Try handle secondary api's response");
-                    var passedCurrencyPairs = await _currencyRecipient.GetCurrencyPairFromSecondary();
+
+                    var passedCurrencyPairs = await Policy.Handle<Exception>()
+                  .Retry(3, (e, i) => Console.WriteLine(e.Message))
+                  .Execute(_currencyRecipient.GetCurrencyPairFromSecondary);
+
                     _result.Rates = _modelBuilder.ConvertToDecimal(_modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs).Data);
                 }
                 else
