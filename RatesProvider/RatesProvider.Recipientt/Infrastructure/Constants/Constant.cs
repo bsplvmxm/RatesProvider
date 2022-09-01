@@ -7,4 +7,5 @@ public static class Constant
     public const string SecondaryApiLink = "https://currate.ru/api/?get=rates&pairs=";
     public const string PrimaryApiParamCurrencies = "&currencies=";
     public const string SecondaryApiParamKey = "&key=";
+    public const string SettingsDirectory = @"C:\Users\govnoZhopa\Source\Repos\RatesProvider\RatesProvider\RatesProvider.Handler";
 }

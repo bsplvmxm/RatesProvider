@@ -1,7 +1,6 @@
 ﻿using RatesProvider.Handler.Interfaces;
 using RatesProvider.Recipient.Exceptions;
 using RatesProvider.Recipient.Infrastructure;
-using System.Collections;
 using System.Globalization;
 using System.Text.Json;
 
