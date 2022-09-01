@@ -8,4 +8,8 @@ public static class Constant
     public const string PrimaryApiParamCurrencies = "&currencies=";
     public const string SecondaryApiParamKey = "&key=";
     public const string SettingsDirectory = @"C:\Users\govnoZhopa\Source\Repos\RatesProvider\RatesProvider\RatesProvider.Handler";
+    public const string QueueName = "rates";
+    public const string RootKey = "rates";
+    public const string Host = "localhost";
+    public const string Exchange = "";
 }
