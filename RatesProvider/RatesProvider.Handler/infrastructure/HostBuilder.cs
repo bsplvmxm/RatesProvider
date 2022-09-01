@@ -2,12 +2,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RatesProvider.Handler.Interfaces;
+using RatesProvider.Handler.Infrastructure;
 using RatesProvider.RatesGetter.Infrastructure;
 using RatesProvider.RatesGetter.Interfaces;
 using RatesProvider.Recipient.Interfaces;
+using NLog.Extensions.Logging;
 using NLog.Web;
 using Microsoft.Extensions.Logging;
-using NLog.Extensions.Logging;
 
 namespace RatesProvider.Handler;
 
@@ -27,6 +28,7 @@ public class HostBuilder
             services.AddScoped<ICurrencyHandler, CurrencyHandler>();
             services.AddScoped<IImplementation, Implementation>();
             services.AddScoped<ISettingsProvider, SettingsProvider>();
+            services.AddScoped<IRabbitMQProducer, RabbitMQProducer>();
             services.AddLogging();
 
             services.AddLogging(loggingBuilder =>
