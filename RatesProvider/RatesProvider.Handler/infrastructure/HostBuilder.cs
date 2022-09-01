@@ -18,7 +18,7 @@ public class HostBuilder
         var hostBuilder = Host.CreateDefaultBuilder()
         .ConfigureAppConfiguration((context, builder) =>
         {
-            builder.SetBasePath(Directory.GetCurrentDirectory());
+            builder.SetBasePath(Constant.SettingsDirectory);
         })
         .ConfigureServices((context, services) =>
         {
@@ -29,11 +29,12 @@ public class HostBuilder
             services.AddScoped<ISettingsProvider, SettingsProvider>();
             services.AddLogging();
 
-            var provider = services.BuildServiceProvider();
-
-            var factory = provider.GetService<ILoggerFactory>();
-            factory.AddNLog();
-            factory.ConfigureNLog("NLog.config");
+            services.AddLogging(loggingBuilder =>
+             {
+                 loggingBuilder.ClearProviders();
+                 loggingBuilder.SetMinimumLevel(LogLevel.Information);
+                 loggingBuilder.AddNLog();
+             });
         });
 
         return hostBuilder;
