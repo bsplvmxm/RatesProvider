@@ -1,6 +1,6 @@
 ﻿namespace RatesProvider.Handler.Models;
 
-public class SecondaryRates : AbstractRates
+public class SecondaryRates
 {
     public Dictionary<string, string> Data { get; set; }
 }
