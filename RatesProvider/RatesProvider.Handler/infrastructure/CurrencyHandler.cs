@@ -5,61 +5,67 @@ using RatesProvider.Recipient.Interfaces;
 using System.Timers;
 using Microsoft.Extensions.Logging;
 using Polly;
+using RatesProvider.RatesGetter.Infrastructure;
+using RatesProvider.RatesGetter.Interfaces;
+using RatesProvider.Handler.Infrastructure;
 
 namespace RatesProvider.Handler;
 
 public class CurrencyHandler : ICurrencyHandler
 {
-    private IRatesBuilder _modelBuilder;
-    private IRatesGetter _currencyRecipient;
-    private IRabbitMQProducer _rabbitMQProducer;
-    private CurrencyRates _result;
+    private readonly IRatesBuilder _modelBuilder;
+    private readonly IRabbitMQProducer _rabbitMQProducer;
+    private readonly ISettingsProvider _settingsProvider;
     private readonly ILogger<CurrencyHandler> _logger;
+    private readonly ILogger<PrimaryHandleChecker> _primaryHandleLogger;    
+    private readonly ILogger<SecondaryHandleChecker> _secondaryHandleLogger;
+    private readonly ILogger<PrimaryRatesGetter> _primaryRatesLogger;
+    private readonly ILogger<SecondaryRatesGetter> _secondaryRatesLogger;
+    private IHandleChecker _handleChecker;
+    private IRatesGetter _currencyRecipient;
+    private CurrencyRates _result;
 
     public CurrencyHandler(IRatesBuilder modelbuilder,
-        IRatesGetter currencyRecipient,
         ILogger<CurrencyHandler> logger,
-        IRabbitMQProducer rabbitMQProducer)
+        IRabbitMQProducer rabbitMQProducer,
+        ISettingsProvider settingsProvider,
+        ILogger<PrimaryRatesGetter> primaryRatesLogger,
+        ILogger<SecondaryRatesGetter> secondaryRatesLogger,
+        ILogger<PrimaryHandleChecker> primaryHandleLogger,
+        ILogger<SecondaryHandleChecker> secondaryHandleLogger)
     {
+        _settingsProvider = settingsProvider;
+        _primaryRatesLogger = primaryRatesLogger;
+        _secondaryRatesLogger = secondaryRatesLogger;
         _modelBuilder = modelbuilder;
-        _currencyRecipient = currencyRecipient;
         _result = new CurrencyRates();
         _logger = logger;
+        _primaryHandleLogger = primaryHandleLogger;
+        _secondaryHandleLogger = secondaryHandleLogger;
         _rabbitMQProducer = rabbitMQProducer;
     }
 
     public async Task HandleAsync(object? sender, ElapsedEventArgs e)
     {
-        try
+        _logger.LogInformation("Try Handle primary RatesGetter");
+
+        _currencyRecipient = new PrimaryRatesGetter(_settingsProvider, _primaryRatesLogger);
+        _handleChecker = new PrimaryHandleChecker(_primaryHandleLogger, _modelBuilder);
+        _result = await _handleChecker.Check(_currencyRecipient);
+
+        _logger.LogInformation("Handle priamry RatesGetter ends with {0} elements in Dictionary", _result.Rates.Count);
+
+        if (_result.Rates.Count == 0)
         {
-            _logger.LogInformation("Try handle primary api's response");
+            _logger.LogInformation("handle primary RatesGetter ends with 0 elements in Dictionary, Try Handle secondary RatesGetter");
 
-            var passedCurrencyPairs = await Policy.Handle<Exception>()
-              .Retry(3, (e, i) => _logger.LogInformation(e.Message))
-              .Execute(_currencyRecipient.GetCurrencyPairFromPrimary);
+            _currencyRecipient = new SecondaryRatesGetter(_settingsProvider, _secondaryRatesLogger);
+            _handleChecker = new SecondaryHandleChecker(_secondaryHandleLogger, _modelBuilder);
+            _result = await _handleChecker.Check(_currencyRecipient);
 
-            _result.Rates = _modelBuilder.BuildPair<PrimaryRates>(passedCurrencyPairs).Quotes;
-
-        }
-        catch (Exception ex)
-        {
-            if (ex is RatesBuildException || ex is HttpRequestException)
-            {
-                _logger.LogInformation("Try handle secondary api's response");
-
-                var passedCurrencyPairs = await Policy.Handle<Exception>()
-              .Retry(3, (e, i) => _logger.LogInformation(e.Message))
-              .Execute(_currencyRecipient.GetCurrencyPairFromSecondary);
-
-                _result.Rates = _modelBuilder.ConvertToDecimal(_modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs).Data);
-            }
-            else
-            { 
-                _logger.LogInformation("Unprocessable response: {0}", ex);
-            }
+            _logger.LogInformation("Handle secondary RatesGetter ends with {0} elements in Dictionary", _result.Rates.Count);
         }
 
         _rabbitMQProducer.SendRatesMessage(_result);
-        _logger.LogInformation("Handle success");
     }
 }
