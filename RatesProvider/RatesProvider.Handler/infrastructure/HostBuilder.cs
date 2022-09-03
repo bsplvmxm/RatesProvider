@@ -24,7 +24,6 @@ public class HostBuilder
         .ConfigureServices((context, services) =>
         {
             services.AddScoped<IRatesBuilder, RatesBuilder>();
-            services.AddScoped<IRatesGetter, Recipient.RatesGetter>();
             services.AddScoped<ICurrencyHandler, CurrencyHandler>();
             services.AddScoped<IImplementation, Implementation>();
             services.AddScoped<ISettingsProvider, SettingsProvider>();

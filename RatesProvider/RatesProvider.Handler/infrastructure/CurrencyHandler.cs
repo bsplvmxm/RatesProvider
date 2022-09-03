@@ -5,24 +5,33 @@ using RatesProvider.Recipient.Interfaces;
 using System.Timers;
 using Microsoft.Extensions.Logging;
 using Polly;
+using RatesProvider.RatesGetter.Infrastructure;
+using RatesProvider.RatesGetter.Interfaces;
 
 namespace RatesProvider.Handler;
 
 public class CurrencyHandler : ICurrencyHandler
 {
-    private IRatesBuilder _modelBuilder;
-    private IRatesGetter _currencyRecipient;
-    private IRabbitMQProducer _rabbitMQProducer;
-    private CurrencyRates _result;
+    private readonly IRatesBuilder _modelBuilder;
+    private readonly IRabbitMQProducer _rabbitMQProducer;
     private readonly ILogger<CurrencyHandler> _logger;
+    private readonly ISettingsProvider _settingsProvider;
+    private readonly ILogger<PrimaryRatesGetter> _primaryRatesLogger;
+    private readonly ILogger<SecondaryRatesGetter> _secondaryRatesLogger;
+    private IRatesGetter _currencyRecipient;
+    private CurrencyRates _result;
 
     public CurrencyHandler(IRatesBuilder modelbuilder,
-        IRatesGetter currencyRecipient,
         ILogger<CurrencyHandler> logger,
-        IRabbitMQProducer rabbitMQProducer)
+        IRabbitMQProducer rabbitMQProducer,
+        ISettingsProvider settingsProvider,
+        ILogger<PrimaryRatesGetter> primaryRatesLogger,
+        ILogger<SecondaryRatesGetter> secondaryRatesLogger)
     {
+        _settingsProvider = settingsProvider;
+        _primaryRatesLogger = primaryRatesLogger;
+        _secondaryRatesLogger = secondaryRatesLogger;
         _modelBuilder = modelbuilder;
-        _currencyRecipient = currencyRecipient;
         _result = new CurrencyRates();
         _logger = logger;
         _rabbitMQProducer = rabbitMQProducer;
@@ -34,11 +43,17 @@ public class CurrencyHandler : ICurrencyHandler
         {
             _logger.LogInformation("Try handle primary api's response");
 
+            _currencyRecipient = new PrimaryRatesGetter(_settingsProvider, _primaryRatesLogger);
+
             var passedCurrencyPairs = await Policy.Handle<Exception>()
               .Retry(3, (e, i) => _logger.LogInformation(e.Message))
-              .Execute(_currencyRecipient.GetCurrencyPairFromPrimary);
+              .Execute(_currencyRecipient.GetRates);
 
             _result.Rates = _modelBuilder.BuildPair<PrimaryRates>(passedCurrencyPairs).Quotes;
+            foreach (var rate in _result.Rates)
+            {
+                Console.WriteLine($"{rate.Key}:{rate.Value}");
+            }
 
         }
         catch (Exception ex)
@@ -49,7 +64,7 @@ public class CurrencyHandler : ICurrencyHandler
 
                 var passedCurrencyPairs = await Policy.Handle<Exception>()
               .Retry(3, (e, i) => _logger.LogInformation(e.Message))
-              .Execute(_currencyRecipient.GetCurrencyPairFromSecondary);
+              .Execute(_currencyRecipient.GetRates);
 
                 _result.Rates = _modelBuilder.ConvertToDecimal(_modelBuilder.BuildPair<SecondaryRates>(passedCurrencyPairs).Data);
             }
