@@ -59,6 +59,7 @@ public class CurrencyHandler : ICurrencyHandler
             }
         }
 
-        _rabbitMQProducer.SendProductMessage(_result);
+        _rabbitMQProducer.SendRatesMessage(_result);
+        _logger.LogInformation("Handle success");
     }
 }

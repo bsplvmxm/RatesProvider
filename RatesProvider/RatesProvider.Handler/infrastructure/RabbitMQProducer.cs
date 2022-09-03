@@ -8,7 +8,7 @@ namespace RatesProvider.Handler.Infrastructure;
 
 public class RabbitMQProducer : IRabbitMQProducer
 {
-    public void SendProductMessage<T>(T message)
+    public void SendRatesMessage<T>(T message)
     {
         var factory = new ConnectionFactory
         {
