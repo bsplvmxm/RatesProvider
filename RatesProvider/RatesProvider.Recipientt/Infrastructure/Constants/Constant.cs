@@ -12,4 +12,5 @@ public static class Constant
     public const string RootKey = "rates";
     public const string Host = "localhost";
     public const string Exchange = "";
+    public const int CountRetry = 3;
 }

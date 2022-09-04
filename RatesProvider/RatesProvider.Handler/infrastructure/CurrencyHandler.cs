@@ -21,6 +21,7 @@ public class CurrencyHandler : ICurrencyHandler
     private readonly ILogger<SecondaryHandleChecker> _secondaryHandleLogger;
     private readonly ILogger<PrimaryRatesGetter> _primaryRatesLogger;
     private readonly ILogger<SecondaryRatesGetter> _secondaryRatesLogger;
+    private readonly IRetryPolicySettings _retryPolicySettings;
     private IHandleChecker _handleChecker;
     private IRatesGetter _currencyRecipient;
     private CurrencyRates _result;
@@ -32,7 +33,8 @@ public class CurrencyHandler : ICurrencyHandler
         ILogger<PrimaryRatesGetter> primaryRatesLogger,
         ILogger<SecondaryRatesGetter> secondaryRatesLogger,
         ILogger<PrimaryHandleChecker> primaryHandleLogger,
-        ILogger<SecondaryHandleChecker> secondaryHandleLogger)
+        ILogger<SecondaryHandleChecker> secondaryHandleLogger,
+        IRetryPolicySettings retryPolicySettings)
     {
         _settingsProvider = settingsProvider;
         _primaryRatesLogger = primaryRatesLogger;
@@ -43,14 +45,17 @@ public class CurrencyHandler : ICurrencyHandler
         _primaryHandleLogger = primaryHandleLogger;
         _secondaryHandleLogger = secondaryHandleLogger;
         _rabbitMQProducer = rabbitMQProducer;
+        _retryPolicySettings = retryPolicySettings;
     }
 
     public async Task HandleAsync(object? sender, ElapsedEventArgs e)
     {
+        var retryPolicy = _retryPolicySettings.BuildRetryPolicy();
+
         _logger.LogInformation("Try Handle primary RatesGetter");
 
         _currencyRecipient = new PrimaryRatesGetter(_settingsProvider, _primaryRatesLogger);
-        _handleChecker = new PrimaryHandleChecker(_primaryHandleLogger, _modelBuilder);
+        _handleChecker = new PrimaryHandleChecker(_primaryHandleLogger, _modelBuilder, retryPolicy);
         _result = await _handleChecker.Check(_currencyRecipient);
 
         _logger.LogInformation("Handle priamry RatesGetter ends with {0} elements in Dictionary", _result.Rates.Count);
@@ -60,7 +65,7 @@ public class CurrencyHandler : ICurrencyHandler
             _logger.LogInformation("handle primary RatesGetter ends with 0 elements in Dictionary, Try Handle secondary RatesGetter");
 
             _currencyRecipient = new SecondaryRatesGetter(_settingsProvider, _secondaryRatesLogger);
-            _handleChecker = new SecondaryHandleChecker(_secondaryHandleLogger, _modelBuilder);
+            _handleChecker = new SecondaryHandleChecker(_secondaryHandleLogger, _modelBuilder, retryPolicy);
             _result = await _handleChecker.Check(_currencyRecipient);
 
             _logger.LogInformation("Handle secondary RatesGetter ends with {0} elements in Dictionary", _result.Rates.Count);
