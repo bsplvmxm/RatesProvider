@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Polly;
+using Polly.Retry;
 using RatesProvider.Handler.Interfaces;
 using RatesProvider.Handler.Models;
 using RatesProvider.Recipient.Exceptions;
@@ -11,13 +12,15 @@ public class SecondaryHandleChecker : IHandleChecker
 {
     private readonly ILogger<SecondaryHandleChecker> _logger;
     private readonly IRatesBuilder _ratesBuilder;
+    private readonly RetryPolicy _retryPolicy;
     private CurrencyRates _result;
 
-    public SecondaryHandleChecker(ILogger<SecondaryHandleChecker> logger, IRatesBuilder ratesBuilder)
+    public SecondaryHandleChecker(ILogger<SecondaryHandleChecker> logger, IRatesBuilder ratesBuilder, RetryPolicy retryPolicy)
     {
         _logger = logger;
         _ratesBuilder = ratesBuilder;
         _result = new CurrencyRates();
+        _retryPolicy = retryPolicy;
     }
 
     /// <summary>
@@ -27,9 +30,7 @@ public class SecondaryHandleChecker : IHandleChecker
     {
         try
         {
-            var passedRates = await Policy.Handle<Exception>()
-                  .Retry(3, (e, i) => _logger.LogInformation(e.Message))
-                  .Execute(ratesGetter.GetRates);
+            var passedRates = await _retryPolicy.Execute(ratesGetter.GetRates);
             _result.Rates = _ratesBuilder.ConvertToDecimal(_ratesBuilder.BuildPair<SecondaryRates>(passedRates).Data);
             return _result;
         }

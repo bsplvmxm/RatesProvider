@@ -28,6 +28,7 @@ public class HostBuilder
             services.AddScoped<IImplementation, Implementation>();
             services.AddScoped<ISettingsProvider, SettingsProvider>();
             services.AddScoped<IRabbitMQProducer, RabbitMQProducer>();
+            services.AddScoped<IRetryPolicySettings, RetryPolicySettings>();
             services.AddLogging();
 
             services.AddLogging(loggingBuilder =>
