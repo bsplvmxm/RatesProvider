@@ -18,7 +18,7 @@ public class RetryPolicySettings : IRetryPolicySettings
     public RetryPolicy BuildRetryPolicy() => Policy.Handle<Exception>()
             .WaitAndRetry(
             retryCount: Constant.CountRetry,
-            sleepDurationProvider: (attemptCount) => TimeSpan.FromSeconds(attemptCount * 2),
+            sleepDurationProvider: (attemptCount) => TimeSpan.FromSeconds(attemptCount * Constant.DelayMultiplier),
             onRetry: (exception, sleepDuration, attemptNumber, context) =>
             _logger.LogInformation("{0}: retry with delay {1}, try {2}/{3}", exception, sleepDuration, attemptNumber, Constant.CountRetry));
 }

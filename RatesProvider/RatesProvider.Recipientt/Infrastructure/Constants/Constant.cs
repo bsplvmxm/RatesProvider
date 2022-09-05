@@ -13,4 +13,5 @@ public static class Constant
     public const string Host = "localhost";
     public const string Exchange = "";
     public const int CountRetry = 3;
+    public const int DelayMultiplier = 2;
 }
