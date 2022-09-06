@@ -2,6 +2,7 @@
 using RatesProvider.Handler;
 using RatesProvider.Handler.Interfaces;
 
+
 var host = HostBuilder.CreateHostBuilder().Build();
 
 await host.Services.GetService<IImplementation>()!.Run();
