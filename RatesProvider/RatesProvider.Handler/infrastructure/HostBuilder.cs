@@ -23,13 +23,13 @@ public class HostBuilder
         })
         .ConfigureServices((context, services) =>
         {
-            services.AddScoped<IRatesBuilder, RatesBuilder>();
-            services.AddScoped<ICurrencyHandler, CurrencyHandler>();
+
             services.AddScoped<IImplementation, Implementation>();
+            services.AddScoped<ICurrencyHandler, CurrencyHandler>();
+            services.AddScoped<IRatesBuilder, RatesBuilder>();
             services.AddScoped<ISettingsProvider, SettingsProvider>();
             services.AddScoped<IRabbitMQProducer, RabbitMQProducer>();
             services.AddScoped<IRetryPolicySettings, RetryPolicySettings>();
-            services.AddLogging();
 
             services.AddLogging(loggingBuilder =>
              {

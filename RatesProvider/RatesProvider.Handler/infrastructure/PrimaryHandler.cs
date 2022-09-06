@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Polly.Retry;
 using RatesProvider.Handler.Interfaces;
-using RatesProvider.Handler.Models;
+using IncredibleBackendContracts.Models;
 using RatesProvider.RatesGetter.Infrastructure;
 using RatesProvider.RatesGetter.Interfaces;
 
@@ -26,7 +26,7 @@ public class PrimaryHandler : HandleFactory
         _currencyRecipient = new PrimaryRatesGetter(_settingsProvider, _logger);
         _handleChecker = new PrimaryHandleChecker(_logger, _modelBuilder, retryPolicy);
     }
-    public async Task<CurrencyRates> Handle() 
+    public async Task<CurrencyRate> Handle() 
     {
         return await _handleChecker.Check(_currencyRecipient);
     }

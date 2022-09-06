@@ -1,5 +1,5 @@
 ﻿using RatesProvider.RatesGetter.Interfaces;
-using RatesProvider.Recipient.Enums;
+using IncredibleBackendContracts.Enums;
 
 namespace RatesProvider.RatesGetter.Infrastructure;
 
@@ -14,7 +14,7 @@ public class SettingsProvider : ISettingsProvider
 
     public string GetNeededCurrencies(bool isNeedToAddBase)
     {
-        var rates = Enum.GetNames(typeof(Rates));
+        var rates = Enum.GetNames(typeof(Currency));
 
         if (isNeedToAddBase)
         {
