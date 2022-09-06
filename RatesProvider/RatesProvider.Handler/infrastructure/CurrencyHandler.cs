@@ -1,9 +1,7 @@
 ﻿using RatesProvider.Handler.Interfaces;
 using RatesProvider.Handler.Models;
-using RatesProvider.Recipient.Interfaces;
 using System.Timers;
 using Microsoft.Extensions.Logging;
-using RatesProvider.RatesGetter.Infrastructure;
 using RatesProvider.RatesGetter.Interfaces;
 using RatesProvider.Handler.Infrastructure;
 
@@ -16,8 +14,7 @@ public class CurrencyHandler : ICurrencyHandler
     private readonly ISettingsProvider _settingsProvider;
     private readonly IRetryPolicySettings _retryPolicySettings;
     private readonly ILogger _logger;
-    private IHandleChecker _handleChecker;
-    private IRatesGetter _currencyRecipient;
+    private HandleFactory _handleFactory;
     private CurrencyRates _result;
 
     public CurrencyHandler(IRatesBuilder modelbuilder,
@@ -40,9 +37,8 @@ public class CurrencyHandler : ICurrencyHandler
 
         _logger.LogInformation("Try Handle primary RatesGetter");
 
-        _currencyRecipient = new PrimaryRatesGetter(_settingsProvider, _logger);
-        _handleChecker = new PrimaryHandleChecker(_logger, _modelBuilder, retryPolicy);
-        _result = await _handleChecker.Check(_currencyRecipient);
+        _handleFactory = new PrimaryHandler(_logger, _settingsProvider, _modelBuilder, retryPolicy);
+        _result = await _handleFactory.Handle();
 
         _logger.LogInformation("Handle priamry RatesGetter ends with {0} elements in Dictionary", _result.Rates.Count);
 
@@ -50,15 +46,15 @@ public class CurrencyHandler : ICurrencyHandler
         {
             _logger.LogInformation("handle primary RatesGetter ends with 0 elements in Dictionary, Try Handle secondary RatesGetter");
 
-            _currencyRecipient = new SecondaryRatesGetter(_settingsProvider, _logger);
-            _handleChecker = new SecondaryHandleChecker(_logger, _modelBuilder, retryPolicy);
-            _result = await _handleChecker.Check(_currencyRecipient);
+            _handleFactory = new SecondaryHandler(_logger, _settingsProvider, _modelBuilder, retryPolicy);
+            _result = await _handleFactory.Handle();
+            foreach (var item in _result.Rates)
+            {
+                Console.WriteLine($"{item.Key}:{item.Value}");
+            }
 
             _logger.LogInformation("Handle secondary RatesGetter ends with {0} elements in Dictionary", _result.Rates.Count);
         }
-
-        //Абстрактная фабрика
-
         _rabbitMQProducer.SendRatesMessage(_result);
     }
 }
