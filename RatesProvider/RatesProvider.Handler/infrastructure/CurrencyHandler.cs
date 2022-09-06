@@ -51,6 +51,7 @@ public class CurrencyHandler : ICurrencyHandler
 
             _logger.LogInformation("Handle secondary RatesGetter ends with {0} elements in Dictionary", _result.Rates.Count);
         }
+        _logger.LogInformation("Send rates to Queue");
         _rabbitMQProducer.SendRatesMessage(_result);
     }
 }
