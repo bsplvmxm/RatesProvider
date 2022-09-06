@@ -8,9 +8,9 @@ namespace RatesProvider.Handler.Infrastructure;
 
 public class RetryPolicySettings : IRetryPolicySettings
 {
-    private readonly ILogger<RetryPolicySettings> _logger;
+    private readonly ILogger _logger;
 
-    public RetryPolicySettings(ILogger<RetryPolicySettings> logger)
+    public RetryPolicySettings(ILogger logger)
     {
         _logger = logger;
     }
@@ -18,7 +18,7 @@ public class RetryPolicySettings : IRetryPolicySettings
     public RetryPolicy BuildRetryPolicy() => Policy.Handle<Exception>()
             .WaitAndRetry(
             retryCount: Constant.CountRetry,
-            sleepDurationProvider: (attemptCount) => TimeSpan.FromSeconds(attemptCount * Constant.DelayMultiplier),
+            sleepDurationProvider: (attemptCount) => TimeSpan.FromSeconds(Math.Pow(attemptCount, Constant.DelayMultiplier)),
             onRetry: (exception, sleepDuration, attemptNumber, context) =>
             _logger.LogInformation("{0}: retry with delay {1}, try {2}/{3}", exception, sleepDuration, attemptNumber, Constant.CountRetry));
 }

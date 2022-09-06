@@ -10,12 +10,12 @@ namespace RatesProvider.Handler.Infrastructure;
 
 public class SecondaryHandleChecker : IHandleChecker
 {
-    private readonly ILogger<SecondaryHandleChecker> _logger;
+    private readonly ILogger _logger;
     private readonly IRatesBuilder _ratesBuilder;
     private readonly RetryPolicy _retryPolicy;
     private CurrencyRates _result;
 
-    public SecondaryHandleChecker(ILogger<SecondaryHandleChecker> logger, IRatesBuilder ratesBuilder, RetryPolicy retryPolicy)
+    public SecondaryHandleChecker(ILogger logger, IRatesBuilder ratesBuilder, RetryPolicy retryPolicy)
     {
         _logger = logger;
         _ratesBuilder = ratesBuilder;

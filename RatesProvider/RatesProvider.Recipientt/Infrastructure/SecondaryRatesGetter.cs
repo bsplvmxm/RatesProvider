@@ -10,9 +10,9 @@ public class SecondaryRatesGetter : IRatesGetter
     private readonly HttpClient _httpClient;
     private readonly string _secondaryApiKey;
     private readonly ISettingsProvider _settingsProvider;
-    private readonly ILogger<SecondaryRatesGetter> _logger;
+    private readonly ILogger _logger;
 
-    public SecondaryRatesGetter(ISettingsProvider settingsProvider, ILogger<SecondaryRatesGetter> logger)
+    public SecondaryRatesGetter(ISettingsProvider settingsProvider, ILogger logger)
     {
         _httpClient = new HttpClient();
         _settingsProvider = settingsProvider;

@@ -10,9 +10,9 @@ public class PrimaryRatesGetter : IRatesGetter
     private readonly HttpClient _httpClient;
     private readonly string _primaryApiKey;
     private readonly ISettingsProvider _settingsProvider;
-    private readonly ILogger<PrimaryRatesGetter> _logger;
+    private readonly ILogger _logger;
 
-    public PrimaryRatesGetter(ISettingsProvider settingsProvider, ILogger<PrimaryRatesGetter> logger)
+    public PrimaryRatesGetter(ISettingsProvider settingsProvider, ILogger logger)
     {
         _httpClient = new HttpClient();
         _settingsProvider = settingsProvider;
