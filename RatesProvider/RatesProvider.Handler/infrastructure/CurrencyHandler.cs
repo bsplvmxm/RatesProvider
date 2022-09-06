@@ -1,9 +1,9 @@
 ﻿using RatesProvider.Handler.Interfaces;
-using RatesProvider.Handler.Models;
 using System.Timers;
 using Microsoft.Extensions.Logging;
 using RatesProvider.RatesGetter.Interfaces;
 using RatesProvider.Handler.Infrastructure;
+using IncredibleBackendContracts.Models;
 
 namespace RatesProvider.Handler;
 
@@ -15,7 +15,7 @@ public class CurrencyHandler : ICurrencyHandler
     private readonly IRetryPolicySettings _retryPolicySettings;
     private readonly ILogger _logger;
     private HandleFactory _handleFactory;
-    private CurrencyRates _result;
+    private CurrencyRate _result;
 
     public CurrencyHandler(IRatesBuilder modelbuilder,
         ILogger<CurrencyHandler> logger,
@@ -28,7 +28,7 @@ public class CurrencyHandler : ICurrencyHandler
         _modelBuilder = modelbuilder;
         _settingsProvider = settingsProvider;
         _logger = logger;
-        _result = new CurrencyRates();
+        _result = new CurrencyRate();
     }
 
     public async Task HandleAsync(object? sender, ElapsedEventArgs e)
@@ -48,10 +48,6 @@ public class CurrencyHandler : ICurrencyHandler
 
             _handleFactory = new SecondaryHandler(_logger, _settingsProvider, _modelBuilder, retryPolicy);
             _result = await _handleFactory.Handle();
-            foreach (var item in _result.Rates)
-            {
-                Console.WriteLine($"{item.Key}:{item.Value}");
-            }
 
             _logger.LogInformation("Handle secondary RatesGetter ends with {0} elements in Dictionary", _result.Rates.Count);
         }

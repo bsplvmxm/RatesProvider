@@ -10,7 +10,7 @@ public class RetryPolicySettings : IRetryPolicySettings
 {
     private readonly ILogger _logger;
 
-    public RetryPolicySettings(ILogger logger)
+    public RetryPolicySettings(ILogger<RetryPolicySettings> logger)
     {
         _logger = logger;
     }

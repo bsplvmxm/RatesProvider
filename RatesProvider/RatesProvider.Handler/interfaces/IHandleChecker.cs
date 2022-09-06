@@ -1,9 +1,9 @@
-﻿using RatesProvider.Handler.Models;
+﻿using IncredibleBackendContracts.Models;
 using RatesProvider.Recipient.Interfaces;
 
 namespace RatesProvider.Handler.Interfaces;
 
 public interface IHandleChecker
 {
-    Task<CurrencyRates> Check<T>(T ratesGetter) where T : IRatesGetter;
+    Task<CurrencyRate> Check<T>(T ratesGetter) where T : IRatesGetter;
 }
