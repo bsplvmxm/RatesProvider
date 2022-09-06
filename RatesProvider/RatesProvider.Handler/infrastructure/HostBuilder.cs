@@ -5,10 +5,10 @@ using RatesProvider.Handler.Interfaces;
 using RatesProvider.Handler.Infrastructure;
 using RatesProvider.RatesGetter.Infrastructure;
 using RatesProvider.RatesGetter.Interfaces;
-using RatesProvider.Recipient.Interfaces;
 using NLog.Extensions.Logging;
 using NLog.Web;
 using Microsoft.Extensions.Logging;
+using RatesProvider.Recipient.Infrastructure;
 
 namespace RatesProvider.Handler;
 
@@ -19,7 +19,7 @@ public class HostBuilder
         var hostBuilder = Host.CreateDefaultBuilder()
         .ConfigureAppConfiguration((context, builder) =>
         {
-            builder.SetBasePath(Constant.SettingsDirectory);
+            builder.SetBasePath(Environment.GetEnvironmentVariable(EnvironmentVirable.BaseDirectory, EnvironmentVariableTarget.Machine)!);
         })
         .ConfigureServices((context, services) =>
         {
