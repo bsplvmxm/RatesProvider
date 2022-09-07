@@ -2,7 +2,7 @@
 using Polly.Retry;
 using RatesProvider.Handler.Interfaces;
 using RatesProvider.Recipient.Interfaces;
-using IncredibleBackendContracts.Models;
+using IncredibleBackendContracts.ExchangeModels;
 using RatesProvider.Handler.Models;
 
 namespace RatesProvider.Handler.Infrastructure;

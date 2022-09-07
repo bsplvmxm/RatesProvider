@@ -4,7 +4,7 @@ using RatesProvider.Handler.Interfaces;
 using RatesProvider.Handler.Models;
 using RatesProvider.Recipient.Exceptions;
 using RatesProvider.Recipient.Interfaces;
-using IncredibleBackendContracts.Models;
+using IncredibleBackendContracts.ExchangeModels;
 
 namespace RatesProvider.Handler.Infrastructure;
 

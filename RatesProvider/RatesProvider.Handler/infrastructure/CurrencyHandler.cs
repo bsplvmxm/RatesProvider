@@ -3,7 +3,7 @@ using System.Timers;
 using Microsoft.Extensions.Logging;
 using RatesProvider.RatesGetter.Interfaces;
 using RatesProvider.Handler.Infrastructure;
-using IncredibleBackendContracts.Models;
+using IncredibleBackendContracts.ExchangeModels;
 
 namespace RatesProvider.Handler;
 
@@ -37,7 +37,7 @@ public class CurrencyHandler : ICurrencyHandler
 
         _logger.LogInformation("Try Handle primary RatesGetter");
 
-        _handleFactory = new PrimaryHandler(_logger, _settingsProvider, _modelBuilder, retryPolicy);
+        _handleFactory = new PrimaryHandler(_logger, _settingsProvider, _modelBuilder, retryPolicy); //PrimarySourceHandler //ratesSourceHandler(_handleFactory)
         _result = await _handleFactory.Handle();
 
         _logger.LogInformation("Handle priamry RatesGetter ends with {0} elements in Dictionary", _result.Rates.Count);
@@ -52,6 +52,6 @@ public class CurrencyHandler : ICurrencyHandler
             _logger.LogInformation("Handle secondary RatesGetter ends with {0} elements in Dictionary", _result.Rates.Count);
         }
         _logger.LogInformation("Send rates to Queue");
-        _rabbitMQProducer.SendRatesMessage(_result);
+        await _rabbitMQProducer.SendRatesMessage(_result);
     }
 }

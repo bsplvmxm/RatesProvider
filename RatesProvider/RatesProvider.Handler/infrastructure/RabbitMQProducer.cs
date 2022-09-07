@@ -1,46 +1,29 @@
 ﻿using RatesProvider.Handler.Interfaces;
-using RabbitMQ.Client;
-using Newtonsoft.Json;
-using System.Text;
 using RatesProvider.RatesGetter.Infrastructure;
 using RatesProvider.RatesGetter.Interfaces;
 using RatesProvider.Recipient.Infrastructure;
-
+using MassTransit;
+using IncredibleBackendContracts.ExchangeModels;
+using Newtonsoft.Json;
 
 namespace RatesProvider.Handler.Infrastructure;
 
 public class RabbitMQProducer : IRabbitMQProducer
 {
-    ISettingsProvider _settingsProvider;
+    private readonly ISettingsProvider _settingsProvider;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public RabbitMQProducer(ISettingsProvider settingsPovider)
+    public RabbitMQProducer(ISettingsProvider settingsPovider, IPublishEndpoint publishEndpoint)
     {
         _settingsProvider = settingsPovider;
+        _publishEndpoint = publishEndpoint;
     }
 
-    public void SendRatesMessage<T>(T message)
+    public async Task SendRatesMessage<T>(T message)
     {
-        var factory = new ConnectionFactory
-        {
-            HostName = _settingsProvider.GetEnvironmentVirableValue(EnvironmentVirable.RabbitServer),
-            UserName = _settingsProvider.GetEnvironmentVirableValue(EnvironmentVirable.RabbitLogin),
-            Password = _settingsProvider.GetEnvironmentVirableValue(EnvironmentVirable.RabbitPassword),
-        };
-        var connection = factory.CreateConnection();
+        if (message == null)
+            return;
 
-        using (IModel channel = connection.CreateModel())
-        {
-            channel.QueueDeclare(Constant.QueueName, true, false, false, null);
-
-            var json = JsonConvert.SerializeObject(message);
-            var body = Encoding.UTF8.GetBytes(json);
-
-            IBasicProperties basicProperties = channel.CreateBasicProperties();
-
-            channel.BasicPublish(exchange: Constant.Exchange, routingKey: Constant.RootKey, body: body, basicProperties: basicProperties);
-
-            channel.Close();
-        }
-        connection.Close();
+        await _publishEndpoint.Publish(message);
     }
 }
