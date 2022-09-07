@@ -1,10 +1,11 @@
 ﻿using RatesProvider.Handler.Interfaces;
 using RabbitMQ.Client;
-using System.Text.Json;
+using Newtonsoft.Json;
 using System.Text;
 using RatesProvider.RatesGetter.Infrastructure;
 using RatesProvider.RatesGetter.Interfaces;
 using RatesProvider.Recipient.Infrastructure;
+
 
 namespace RatesProvider.Handler.Infrastructure;
 
@@ -21,23 +22,25 @@ public class RabbitMQProducer : IRabbitMQProducer
     {
         var factory = new ConnectionFactory
         {
-            AutomaticRecoveryEnabled = true,
-            NetworkRecoveryInterval = TimeSpan.FromSeconds(1),
             HostName = _settingsProvider.GetEnvironmentVirableValue(EnvironmentVirable.RabbitServer),
             UserName = _settingsProvider.GetEnvironmentVirableValue(EnvironmentVirable.RabbitLogin),
             Password = _settingsProvider.GetEnvironmentVirableValue(EnvironmentVirable.RabbitPassword),
-            //VirtualHost = "nbtest"
-    };
+        };
         var connection = factory.CreateConnection();
 
-        using
-        var channel = connection.CreateModel();
+        using (IModel channel = connection.CreateModel())
+        {
+            channel.QueueDeclare(Constant.QueueName, true, false, false, null);
 
-        channel.QueueDeclare(Constant.QueueName, exclusive: false);
+            var json = JsonConvert.SerializeObject(message);
+            var body = Encoding.UTF8.GetBytes(json);
 
-        var json = JsonSerializer.Serialize(message);
-        var body = Encoding.UTF8.GetBytes(json);
+            IBasicProperties basicProperties = channel.CreateBasicProperties();
 
-        channel.BasicPublish(exchange: Constant.Exchange, routingKey: Constant.RootKey, body: body);
+            channel.BasicPublish(exchange: Constant.Exchange, routingKey: Constant.RootKey, body: body, basicProperties: basicProperties);
+
+            channel.Close();
+        }
+        connection.Close();
     }
 }
