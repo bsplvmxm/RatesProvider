@@ -7,22 +7,25 @@ using IncredibleBackendContracts.ExchangeModels;
 
 namespace RatesProvider.Handler.Infrastructure;
 
-public class SecondaryHandler : HandleFactory
+public class SecondarySourceHandler : HandleFactory
 {
     private readonly SecondaryRatesGetter _currencyRecipient;
     private readonly SecondaryHandleChecker _handleChecker;
+    private readonly ILogger _logger;
 
-    public SecondaryHandler(ILogger logger,
+    public SecondarySourceHandler(ILogger logger,
         ISettingsProvider settingsProvider,
         IRatesBuilder ratesBuilder,
         RetryPolicy retryPolicy)
     {
         _currencyRecipient = new SecondaryRatesGetter(settingsProvider, logger);
         _handleChecker = new SecondaryHandleChecker(logger, ratesBuilder, retryPolicy);
+        _logger = logger;
     }
 
     public async Task<CurrencyRate> Handle()
     {
+        _logger.LogInformation("handle primary RatesGetter ends with 0 elements in Dictionary, Try Handle secondary RatesGetter");
         return await _handleChecker.Check(_currencyRecipient);
     }
 }

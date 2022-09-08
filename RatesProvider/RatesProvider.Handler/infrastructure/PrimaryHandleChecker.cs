@@ -29,7 +29,7 @@ public class PrimaryHandleChecker : IHandleChecker
     {
         try
         {
-            //log
+            _logger.LogInformation("try to build Rates");
             var passedRates = await _retryPolicy.Execute(ratesGetter.GetRates);
             _result.Rates = _ratesBuilder.BuildPair<PrimaryRates>(passedRates).Quotes;
             return _result;

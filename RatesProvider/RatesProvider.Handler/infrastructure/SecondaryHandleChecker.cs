@@ -36,14 +36,8 @@ public class SecondaryHandleChecker : IHandleChecker
         }
         catch (Exception ex)
         {
-            if (ex is RatesBuildException || ex is HttpRequestException)
-            {
-                _logger.LogInformation("failed: {0}", ex.Message);
-            }
-            else
-            {
-                _logger.LogInformation("failed: {0}", ex.Message);
-            }
+           _logger.LogError("failed: {0}", ex.Message);
+
             return _result;
         }
     }

@@ -1,29 +1,30 @@
 ﻿using RatesProvider.Handler.Interfaces;
-using RatesProvider.RatesGetter.Infrastructure;
-using RatesProvider.RatesGetter.Interfaces;
-using RatesProvider.Recipient.Infrastructure;
 using MassTransit;
-using IncredibleBackendContracts.ExchangeModels;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 
 namespace RatesProvider.Handler.Infrastructure;
 
 public class RabbitMQProducer : IRabbitMQProducer
 {
-    private readonly ISettingsProvider _settingsProvider;
     private readonly IPublishEndpoint _publishEndpoint;
+    private readonly ILogger _logger;
 
-    public RabbitMQProducer(ISettingsProvider settingsPovider, IPublishEndpoint publishEndpoint)
+    public RabbitMQProducer(ILogger<RabbitMQProducer> logger, IPublishEndpoint publishEndpoint)
     {
-        _settingsProvider = settingsPovider;
         _publishEndpoint = publishEndpoint;
+        _logger = logger;
     }
 
     public async Task SendRatesMessage<T>(T message)
     {
-        if (message == null)
-            return;
-
-        await _publishEndpoint.Publish(message);
+        try
+        {
+            _logger.LogInformation("Send rates to Queue");
+            await _publishEndpoint.Publish(message!);
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex.Message);
+        }
     }
 }

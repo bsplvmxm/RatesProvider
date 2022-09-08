@@ -38,7 +38,6 @@ public class HostBuilder
 
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    //cfg.ConfigureEndpoints(context);
                     cfg.UseNewtonsoftJsonSerializer();
 
                     cfg.Host(Environment.GetEnvironmentVariable(EnvironmentVirable.RabbitServer, EnvironmentVariableTarget.Machine), h =>
