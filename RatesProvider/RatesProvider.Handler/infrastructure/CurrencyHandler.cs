@@ -3,55 +3,46 @@ using System.Timers;
 using Microsoft.Extensions.Logging;
 using RatesProvider.RatesGetter.Interfaces;
 using RatesProvider.Handler.Infrastructure;
-using IncredibleBackendContracts.Models;
+using IncredibleBackendContracts.ExchangeModels;
 
 namespace RatesProvider.Handler;
 
 public class CurrencyHandler : ICurrencyHandler
 {
-    private readonly IRatesBuilder _modelBuilder;
     private readonly IRabbitMQProducer _rabbitMQProducer;
-    private readonly ISettingsProvider _settingsProvider;
-    private readonly IRetryPolicySettings _retryPolicySettings;
     private readonly ILogger _logger;
-    private HandleFactory _handleFactory;
+    private List<HandleFactory> _ratesSourceHandlers;
     private CurrencyRate _result;
 
-    public CurrencyHandler(IRatesBuilder modelbuilder,
+    public CurrencyHandler(IRatesBuilder ratesBuilder,
         ILogger<CurrencyHandler> logger,
         IRabbitMQProducer rabbitMQProducer,
         ISettingsProvider settingsProvider,
         IRetryPolicySettings retryPolicySettings)
     {
-        _retryPolicySettings = retryPolicySettings;
         _rabbitMQProducer = rabbitMQProducer;
-        _modelBuilder = modelbuilder;
-        _settingsProvider = settingsProvider;
         _logger = logger;
         _result = new CurrencyRate();
+        _ratesSourceHandlers = new List<HandleFactory>()
+        {
+            new PrimarySourceHandler(_logger, settingsProvider, ratesBuilder, retryPolicySettings.BuildRetryPolicy()),
+            new SecondarySourceHandler(_logger, settingsProvider, ratesBuilder, retryPolicySettings.BuildRetryPolicy())
+    };
     }
 
     public async Task HandleAsync(object? sender, ElapsedEventArgs e)
     {
-        var retryPolicy = _retryPolicySettings.BuildRetryPolicy();
-
-        _logger.LogInformation("Try Handle primary RatesGetter");
-
-        _handleFactory = new PrimaryHandler(_logger, _settingsProvider, _modelBuilder, retryPolicy);
-        _result = await _handleFactory.Handle();
-
-        _logger.LogInformation("Handle priamry RatesGetter ends with {0} elements in Dictionary", _result.Rates.Count);
-
-        if (_result.Rates.Count == 0)
+        foreach (var ratesSourceHandler in _ratesSourceHandlers)
         {
-            _logger.LogInformation("handle primary RatesGetter ends with 0 elements in Dictionary, Try Handle secondary RatesGetter");
+            _result = await ratesSourceHandler.Handle();
 
-            _handleFactory = new SecondaryHandler(_logger, _settingsProvider, _modelBuilder, retryPolicy);
-            _result = await _handleFactory.Handle();
-
-            _logger.LogInformation("Handle secondary RatesGetter ends with {0} elements in Dictionary", _result.Rates.Count);
+            if(_result.Rates.Count != 0)
+            {
+                _logger.LogInformation("Finish handle with {0} elements in dictionary", _result.Rates.Count);
+                break;
+            }
         }
-        _logger.LogInformation("Send rates to Queue");
-        _rabbitMQProducer.SendRatesMessage(_result);
+
+        await _rabbitMQProducer.SendRatesMessage(_result);
     }
 }

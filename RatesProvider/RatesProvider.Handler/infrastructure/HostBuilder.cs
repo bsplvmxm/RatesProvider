@@ -9,6 +9,7 @@ using NLog.Extensions.Logging;
 using NLog.Web;
 using Microsoft.Extensions.Logging;
 using RatesProvider.Recipient.Infrastructure;
+using MassTransit;
 
 namespace RatesProvider.Handler;
 
@@ -30,6 +31,22 @@ public class HostBuilder
             services.AddScoped<ISettingsProvider, SettingsProvider>();
             services.AddScoped<IRabbitMQProducer, RabbitMQProducer>();
             services.AddScoped<IRetryPolicySettings, RetryPolicySettings>();
+
+            services.AddMassTransit(x =>
+            {
+                x.SetKebabCaseEndpointNameFormatter();
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.UseNewtonsoftJsonSerializer();
+
+                    cfg.Host(Environment.GetEnvironmentVariable(EnvironmentVirable.RabbitServer, EnvironmentVariableTarget.Machine), h =>
+                    {
+                        h.Username(Environment.GetEnvironmentVariable(EnvironmentVirable.RabbitLogin));
+                        h.Password(Environment.GetEnvironmentVariable(EnvironmentVirable.RabbitPassword));
+                    });
+                });
+            });
 
             services.AddLogging(loggingBuilder =>
              {

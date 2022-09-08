@@ -1,46 +1,30 @@
 ﻿using RatesProvider.Handler.Interfaces;
-using RabbitMQ.Client;
-using Newtonsoft.Json;
-using System.Text;
-using RatesProvider.RatesGetter.Infrastructure;
-using RatesProvider.RatesGetter.Interfaces;
-using RatesProvider.Recipient.Infrastructure;
-
+using MassTransit;
+using Microsoft.Extensions.Logging;
 
 namespace RatesProvider.Handler.Infrastructure;
 
 public class RabbitMQProducer : IRabbitMQProducer
 {
-    ISettingsProvider _settingsProvider;
+    private readonly IPublishEndpoint _publishEndpoint;
+    private readonly ILogger _logger;
 
-    public RabbitMQProducer(ISettingsProvider settingsPovider)
+    public RabbitMQProducer(ILogger<RabbitMQProducer> logger, IPublishEndpoint publishEndpoint)
     {
-        _settingsProvider = settingsPovider;
+        _publishEndpoint = publishEndpoint;
+        _logger = logger;
     }
 
-    public void SendRatesMessage<T>(T message)
+    public async Task SendRatesMessage<T>(T message)
     {
-        var factory = new ConnectionFactory
+        try
         {
-            HostName = _settingsProvider.GetEnvironmentVirableValue(EnvironmentVirable.RabbitServer),
-            UserName = _settingsProvider.GetEnvironmentVirableValue(EnvironmentVirable.RabbitLogin),
-            Password = _settingsProvider.GetEnvironmentVirableValue(EnvironmentVirable.RabbitPassword),
-        };
-        var connection = factory.CreateConnection();
-
-        using (IModel channel = connection.CreateModel())
-        {
-            channel.QueueDeclare(Constant.QueueName, true, false, false, null);
-
-            var json = JsonConvert.SerializeObject(message);
-            var body = Encoding.UTF8.GetBytes(json);
-
-            IBasicProperties basicProperties = channel.CreateBasicProperties();
-
-            channel.BasicPublish(exchange: Constant.Exchange, routingKey: Constant.RootKey, body: body, basicProperties: basicProperties);
-
-            channel.Close();
+            _logger.LogInformation("Send rates to Queue");
+            await _publishEndpoint.Publish(message!);
         }
-        connection.Close();
+        catch(Exception ex)
+        {
+            _logger.LogError(ex.Message);
+        }
     }
 }

@@ -14,7 +14,7 @@ public class SettingsProvider : ISettingsProvider
 
     public string GetNeededCurrencies(bool isNeedToAddBase)
     {
-        var rates = Enum.GetNames(typeof(Currency));
+        var rates = Enum.GetNames(typeof(TradingCurrency));
 
         if (isNeedToAddBase)
         {

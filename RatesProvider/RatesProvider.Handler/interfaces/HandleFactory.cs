@@ -1,4 +1,4 @@
-﻿using IncredibleBackendContracts.Models;
+﻿using IncredibleBackendContracts.ExchangeModels;
 
 namespace RatesProvider.Handler.Interfaces;
 

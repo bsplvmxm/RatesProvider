@@ -4,7 +4,7 @@ using RatesProvider.Handler.Interfaces;
 using RatesProvider.Handler.Models;
 using RatesProvider.Recipient.Exceptions;
 using RatesProvider.Recipient.Interfaces;
-using IncredibleBackendContracts.Models;
+using IncredibleBackendContracts.ExchangeModels;
 
 namespace RatesProvider.Handler.Infrastructure;
 
@@ -36,14 +36,8 @@ public class SecondaryHandleChecker : IHandleChecker
         }
         catch (Exception ex)
         {
-            if (ex is RatesBuildException || ex is HttpRequestException)
-            {
-                _logger.LogInformation("failed: {0}", ex.Message);
-            }
-            else
-            {
-                _logger.LogInformation("failed: {0}", ex.Message);
-            }
+           _logger.LogError("failed: {0}", ex.Message);
+
             return _result;
         }
     }

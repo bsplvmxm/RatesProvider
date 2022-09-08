@@ -3,30 +3,29 @@ using Polly.Retry;
 using RatesProvider.Handler.Interfaces;
 using RatesProvider.RatesGetter.Infrastructure;
 using RatesProvider.RatesGetter.Interfaces;
-using IncredibleBackendContracts.Models;
+using IncredibleBackendContracts.ExchangeModels;
 
 namespace RatesProvider.Handler.Infrastructure;
 
-public class SecondaryHandler : HandleFactory
+public class SecondarySourceHandler : HandleFactory
 {
     private readonly SecondaryRatesGetter _currencyRecipient;
     private readonly SecondaryHandleChecker _handleChecker;
-    private readonly ISettingsProvider _settingsProvider;
     private readonly ILogger _logger;
-    private readonly IRatesBuilder _modelBuilder;
-    public SecondaryHandler(ILogger logger,
+
+    public SecondarySourceHandler(ILogger logger,
         ISettingsProvider settingsProvider,
         IRatesBuilder ratesBuilder,
         RetryPolicy retryPolicy)
     {
+        _currencyRecipient = new SecondaryRatesGetter(settingsProvider, logger);
+        _handleChecker = new SecondaryHandleChecker(logger, ratesBuilder, retryPolicy);
         _logger = logger;
-        _settingsProvider = settingsProvider;
-        _modelBuilder = ratesBuilder;
-        _currencyRecipient = new SecondaryRatesGetter(_settingsProvider, _logger);
-        _handleChecker = new SecondaryHandleChecker(_logger, _modelBuilder, retryPolicy);
     }
+
     public async Task<CurrencyRate> Handle()
     {
+        _logger.LogInformation("handle primary RatesGetter ends with 0 elements in Dictionary, Try Handle secondary RatesGetter");
         return await _handleChecker.Check(_currencyRecipient);
     }
 }
