@@ -7,7 +7,7 @@ using IncredibleBackendContracts.ExchangeModels;
 
 namespace RatesProvider.Handler.Infrastructure;
 
-public class SecondarySourceHandler : HandleFactory
+public class SecondarySourceHandler : IRatesSourceHandler
 {
     private readonly SecondaryRatesGetter _currencyRecipient;
     private readonly SecondaryHandleChecker _handleChecker;

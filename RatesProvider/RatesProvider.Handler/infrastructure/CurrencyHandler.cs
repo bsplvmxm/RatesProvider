@@ -11,7 +11,7 @@ public class CurrencyHandler : ICurrencyHandler
 {
     private readonly IRabbitMQProducer _rabbitMQProducer;
     private readonly ILogger _logger;
-    private List<HandleFactory> _ratesSourceHandlers;
+    private List<IRatesSourceHandler> _ratesSourceHandlers;
     private CurrencyRate _result;
 
     public CurrencyHandler(IRatesBuilder ratesBuilder,
@@ -23,11 +23,11 @@ public class CurrencyHandler : ICurrencyHandler
         _rabbitMQProducer = rabbitMQProducer;
         _logger = logger;
         _result = new CurrencyRate();
-        _ratesSourceHandlers = new List<HandleFactory>()
+        _ratesSourceHandlers = new List<IRatesSourceHandler>()
         {
             new PrimarySourceHandler(_logger, settingsProvider, ratesBuilder, retryPolicySettings.BuildRetryPolicy()),
             new SecondarySourceHandler(_logger, settingsProvider, ratesBuilder, retryPolicySettings.BuildRetryPolicy())
-    };
+        };
     }
 
     public async Task HandleAsync(object? sender, ElapsedEventArgs e)

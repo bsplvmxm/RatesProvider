@@ -2,7 +2,7 @@
 
 namespace RatesProvider.Handler.Interfaces;
 
-public interface HandleFactory
+public interface IRatesSourceHandler
 {
     Task<CurrencyRate> Handle();
 }
