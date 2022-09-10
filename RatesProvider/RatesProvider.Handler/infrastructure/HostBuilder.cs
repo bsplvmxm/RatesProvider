@@ -10,6 +10,8 @@ using NLog.Web;
 using Microsoft.Extensions.Logging;
 using RatesProvider.Recipient.Infrastructure;
 using MassTransit;
+using IncredibleBackendContracts.Constants;
+using IncredibleBackendContracts.Events;
 
 namespace RatesProvider.Handler;
 
@@ -45,6 +47,8 @@ public class HostBuilder
                         h.Username(Environment.GetEnvironmentVariable(EnvironmentVirable.RabbitLogin));
                         h.Password(Environment.GetEnvironmentVariable(EnvironmentVirable.RabbitPassword));
                     });
+
+                    cfg.ReceiveEndpoint(RabbitEndpoint.CurrencyRates, e => e.Bind<NewRatesEvent>());
                 });
             });
 
