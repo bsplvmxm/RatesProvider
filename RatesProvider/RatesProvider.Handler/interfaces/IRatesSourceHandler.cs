@@ -1,8 +1,8 @@
-﻿using IncredibleBackendContracts.ExchangeModels;
+﻿using IncredibleBackendContracts.Events;
 
 namespace RatesProvider.Handler.Interfaces;
 
 public interface IRatesSourceHandler
 {
-    Task<CurrencyRate> Handle();
+    Task<NewRatesEvent> Handle();
 }

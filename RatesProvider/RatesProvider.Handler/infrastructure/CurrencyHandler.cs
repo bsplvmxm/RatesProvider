@@ -3,7 +3,7 @@ using System.Timers;
 using Microsoft.Extensions.Logging;
 using RatesProvider.RatesGetter.Interfaces;
 using RatesProvider.Handler.Infrastructure;
-using IncredibleBackendContracts.ExchangeModels;
+using IncredibleBackendContracts.Events;
 
 namespace RatesProvider.Handler;
 
@@ -12,7 +12,7 @@ public class CurrencyHandler : ICurrencyHandler
     private readonly IRabbitMQProducer _rabbitMQProducer;
     private readonly ILogger _logger;
     private List<IRatesSourceHandler> _ratesSourceHandlers;
-    private CurrencyRate _result;
+    private NewRatesEvent _result;
 
     public CurrencyHandler(IRatesBuilder ratesBuilder,
         ILogger<CurrencyHandler> logger,
@@ -22,7 +22,7 @@ public class CurrencyHandler : ICurrencyHandler
     {
         _rabbitMQProducer = rabbitMQProducer;
         _logger = logger;
-        _result = new CurrencyRate();
+        _result = new NewRatesEvent();
         _ratesSourceHandlers = new List<IRatesSourceHandler>()
         {
             new PrimarySourceHandler(_logger, settingsProvider, ratesBuilder, retryPolicySettings.BuildRetryPolicy()),

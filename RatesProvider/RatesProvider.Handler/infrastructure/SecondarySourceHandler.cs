@@ -3,7 +3,7 @@ using Polly.Retry;
 using RatesProvider.Handler.Interfaces;
 using RatesProvider.RatesGetter.Infrastructure;
 using RatesProvider.RatesGetter.Interfaces;
-using IncredibleBackendContracts.ExchangeModels;
+using IncredibleBackendContracts.Events;
 
 namespace RatesProvider.Handler.Infrastructure;
 
@@ -23,7 +23,7 @@ public class SecondarySourceHandler : IRatesSourceHandler
         _logger = logger;
     }
 
-    public async Task<CurrencyRate> Handle()
+    public async Task<NewRatesEvent> Handle()
     {
         _logger.LogInformation("handle primary RatesGetter ends with 0 elements in Dictionary, Try Handle secondary RatesGetter");
         return await _handleChecker.Check(_currencyRecipient);
