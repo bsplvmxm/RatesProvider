@@ -1,9 +1,7 @@
-using Moq;
 using RatesProvider.Handler;
 using RatesProvider.Handler.Interfaces;
 using RatesProvider.Handler.Models;
 using RatesProvider.Recipient.Exceptions;
-using RatesProvider.Recipient.Interfaces;
 
 namespace RatesPrioveder.Handler.Tests;
 

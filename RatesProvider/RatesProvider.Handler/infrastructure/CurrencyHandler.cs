@@ -35,12 +35,10 @@ public class CurrencyHandler : ICurrencyHandler
         foreach (var ratesSourceHandler in _ratesSourceHandlers)
         {
             _result = await ratesSourceHandler.Handle();
+            _logger.LogInformation("Finish handle with {0} elements in dictionary", _result.Rates.Count);
 
             if(_result.Rates.Count != 0)
-            {
-                _logger.LogInformation("Finish handle with {0} elements in dictionary", _result.Rates.Count);
                 break;
-            }
         }
 
         await _rabbitMQProducer.SendRatesMessage(_result);
