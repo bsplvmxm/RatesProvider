@@ -1,7 +1,6 @@
 ﻿using IncredibleBackendContracts.Events;
 using Microsoft.Extensions.Logging;
 using Polly;
-using Polly.Retry;
 using RatesProvider.Handler.Interfaces;
 using RatesProvider.Handler.Models;
 using RatesProvider.Recipient.Interfaces;
