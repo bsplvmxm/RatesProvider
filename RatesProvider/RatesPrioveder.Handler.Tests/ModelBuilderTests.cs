@@ -63,16 +63,6 @@ public class ModelBuilderTests
     }
 
     [Fact]
-    public void BuildPairTest_WhenIncorrectJsonRecieved_ShouldReturnBuildException()
-    {
-        SetUp();
-
-        var passedJsonString = "{\"success\": true, \"timestamp\": 1661181484, \"source\": \"USD\", \"data\": { \"USDRUB\": \"59.874502\", \"USDEUR\": \"1.004425\" }}";
-
-        Assert.Throws<RatesBuildException>(() => _sut.BuildPair<PrimaryRates>(passedJsonString));
-    }
-
-    [Fact]
     public void ConvertToDecimalTest_WhenCalled_ReturnCorrectDictionary()
     {
         SetUp();

@@ -1,7 +1,7 @@
-﻿using RatesProvider.Handler.Interfaces;
-using System.Timers;
+﻿using System.Timers;
 using Microsoft.Extensions.Logging;
 using RatesProvider.RatesGetter.Interfaces;
+using RatesProvider.Handler.Interfaces;
 using RatesProvider.Handler.Infrastructure;
 using IncredibleBackendContracts.Events;
 using IncredibleBackend.Messaging.Interfaces;

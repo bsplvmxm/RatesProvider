@@ -1,8 +1,8 @@
-﻿using Polly.Retry;
+﻿using Polly;
 
 namespace RatesProvider.Handler.Interfaces;
 
 public interface IRetryPolicySettings
 {
-    RetryPolicy BuildRetryPolicy();
+    ISyncPolicy BuildRetryPolicy();
 }

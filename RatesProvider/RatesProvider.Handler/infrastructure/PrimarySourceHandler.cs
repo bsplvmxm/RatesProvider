@@ -23,7 +23,7 @@ public class PrimarySourceHandler : IRatesSourceHandler
         _handleChecker = new PrimaryHandleChecker(_logger, ratesBuilder, retryPolicy);
     }
 
-    public async Task<NewRatesEvent> Handle() 
+    public virtual async Task<NewRatesEvent> Handle() 
     {
         _logger.LogInformation("Try Handle primary RatesGetter");
         return await _handleChecker.Check(_currencyRecipient);
