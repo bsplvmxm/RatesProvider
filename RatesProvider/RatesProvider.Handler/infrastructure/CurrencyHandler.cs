@@ -4,23 +4,24 @@ using Microsoft.Extensions.Logging;
 using RatesProvider.RatesGetter.Interfaces;
 using RatesProvider.Handler.Infrastructure;
 using IncredibleBackendContracts.Events;
+using IncredibleBackend.Messaging.Interfaces;
 
 namespace RatesProvider.Handler;
 
 public class CurrencyHandler : ICurrencyHandler
 {
-    private readonly IRabbitMQProducer _rabbitMQProducer;
+    private readonly IMessageProducer _messageProducer;
     private readonly ILogger _logger;
     private List<IRatesSourceHandler> _ratesSourceHandlers;
     private NewRatesEvent _result;
 
     public CurrencyHandler(IRatesBuilder ratesBuilder,
         ILogger<CurrencyHandler> logger,
-        IRabbitMQProducer rabbitMQProducer,
+        IMessageProducer messageProducer,
         ISettingsProvider settingsProvider,
         IRetryPolicySettings retryPolicySettings)
     {
-        _rabbitMQProducer = rabbitMQProducer;
+        _messageProducer = messageProducer;
         _logger = logger;
         _result = new NewRatesEvent();
         _ratesSourceHandlers = new List<IRatesSourceHandler>()
@@ -41,6 +42,6 @@ public class CurrencyHandler : ICurrencyHandler
                 break;
         }
 
-        await _rabbitMQProducer.SendRatesMessage(_result);
+        await _messageProducer.ProduceMessage(_result, "Send rates to queue");
     }
 }
