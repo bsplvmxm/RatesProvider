@@ -45,7 +45,6 @@ public class SecondaryHandleCheckerTests
 
         var actual = await _sut.Check(_ratesGetterMock.Object);
 
-        //_pollyMock.Verify(x => x.Execute(It.IsAny<Func<Task<string>>>()), Times.Once); WRYYYYYYYYYYYYYYYYYYYYYYYYYYYY!!!
         _ratesBuilderMock.Verify(x => x.BuildPair<SecondaryRates>(It.IsAny<string>()), Times.Once);
         _ratesBuilderMock.Verify(x => x.ConvertToDecimal(It.IsAny<Dictionary<string, string>>()), Times.Once);
         _ratesGetterMock.Verify(x => x.GetRates(), Times.Once);

@@ -1,14 +1,14 @@
-﻿using RatesProvider.Handler.Interfaces;
-using Moq;
-using Microsoft.Extensions.Logging;
-using RatesProvider.RatesGetter.Interfaces;
-using System.Timers;
+﻿using IncredibleBackend.Messaging.Interfaces;
 using IncredibleBackendContracts.Events;
-using IncredibleBackend.Messaging.Interfaces;
+using Microsoft.Extensions.Logging;
+using Moq;
 using Polly;
-using RatesProvider.Recipient.Interfaces;
 using RatesProvider.Handler.Infrastructure;
+using RatesProvider.Handler.Interfaces;
 using RatesProvider.Handler.Models;
+using RatesProvider.RatesGetter.Interfaces;
+using RatesProvider.Recipient.Interfaces;
+using System.Timers;
 
 namespace RatesProvider.Handler.Tests;
 
@@ -104,63 +104,13 @@ public class CurrencyHandlerTests
 
         _sut.HandleAsync(this, EventArgs.Empty as ElapsedEventArgs);
 
-        //_loggerMock.Verify(x => x.LogInformation(It.IsAny<string>()), Times.Once);
         _messageProducerMock.Verify
             (x => x.ProduceMessage
                 (It.Is<NewRatesEvent>
                     (x => x.Rates.Count == sourceHandlerTask.Result.Rates.Count), It.IsAny<string>()), Times.Once);
-        //_primarySourceHandlerMock.Verify(x => x.Handle(), Times.Once);
-    }
-
-    [Fact]
-    public void HandleAsync_WhenHandleReturnsCurrencyTwice_SendMessageToQueue()
-    {
-        SetUp();
-
-        var sourceHandleRepeats = 2;
-        var loggerRepeats = 2;
-
-        Dictionary<string, decimal> rates = new Dictionary<string, decimal>();
-
-        var sourceHandlerTask = Task.FromResult(new NewRatesEvent() { Rates = rates });
-
-        _sourceHandlerMock
-            .Setup(x => x.Handle())
-            .Returns(sourceHandlerTask);
-
-        _sut.HandleAsync(this, EventArgs.Empty as ElapsedEventArgs);
-
-        _sourceHandlerMock.Verify(x => x.Handle(), Times.Exactly(sourceHandleRepeats));
-        _loggerMock.Verify(x => x.LogInformation(It.IsAny<string>()), Times.Exactly(loggerRepeats));
-        _messageProducerMock.Verify
-            (x => x.ProduceMessage
-                (It.Is<NewRatesEvent>
-                    (x => x.Rates.Count == sourceHandlerTask.Result.Rates.Count), It.IsAny<string>()));
     }
 
     public void SetUpWhenPrimarySourceHandlerWorksFine(NewRatesEvent expectedRates, SecondaryRates ratesBuilderReturningValue )
-    {
-        var retryPolicyTask = Task.FromResult<string>("qwe");
-        var ratesGetterTask = Task.FromResult<string>("qwe");
-
-        _retryPolicyMock
-            .Setup(x => x.Execute(It.IsAny<Func<Task<string>>>()))
-            .Returns(retryPolicyTask);
-
-        _ratesGetterMock
-            .Setup(x => x.GetRates())
-            .Returns(ratesGetterTask);
-
-        _ratesBuilderMock
-            .Setup(x => x.BuildPair<SecondaryRates>(It.IsAny<string>()))
-            .Returns(ratesBuilderReturningValue);
-
-        _ratesBuilderMock
-            .Setup(x => x.ConvertToDecimal(It.IsAny<Dictionary<string, string>>()))
-            .Returns(expectedRates.Rates);
-    }
-
-    public void SetUpWhenPrimarySourceHandlerDoesntWorksFine(NewRatesEvent expectedRates, SecondaryRates ratesBuilderReturningValue)
     {
         var retryPolicyTask = Task.FromResult<string>("qwe");
         var ratesGetterTask = Task.FromResult<string>("qwe");
