@@ -1,10 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using Polly.Retry;
+﻿using IncredibleBackendContracts.Events;
+using Microsoft.Extensions.Logging;
+using Polly;
 using RatesProvider.Handler.Interfaces;
 using RatesProvider.Handler.Models;
-using RatesProvider.Recipient.Exceptions;
 using RatesProvider.Recipient.Interfaces;
-using IncredibleBackendContracts.Events;
 
 namespace RatesProvider.Handler.Infrastructure;
 
@@ -12,10 +11,10 @@ public class SecondaryHandleChecker : IHandleChecker
 {
     private readonly ILogger _logger;
     private readonly IRatesBuilder _ratesBuilder;
-    private readonly RetryPolicy _retryPolicy;
+    private readonly ISyncPolicy _retryPolicy;
     private NewRatesEvent _result;
 
-    public SecondaryHandleChecker(ILogger logger, IRatesBuilder ratesBuilder, RetryPolicy retryPolicy)
+    public SecondaryHandleChecker(ILogger logger, IRatesBuilder ratesBuilder, ISyncPolicy retryPolicy)
     {
         _logger = logger;
         _ratesBuilder = ratesBuilder;

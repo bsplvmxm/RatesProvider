@@ -15,7 +15,7 @@ public class RetryPolicySettings : IRetryPolicySettings
         _logger = logger;
     }
 
-    public RetryPolicy BuildRetryPolicy() => Policy.Handle<Exception>()
+    public ISyncPolicy BuildRetryPolicy() => Policy.Handle<Exception>()
             .WaitAndRetry(
             retryCount: Constant.CountRetry,
             sleepDurationProvider: (attemptCount) => TimeSpan.FromSeconds(Math.Pow(attemptCount, Constant.DelayMultiplier)),

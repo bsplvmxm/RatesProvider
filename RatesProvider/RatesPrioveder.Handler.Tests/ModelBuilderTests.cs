@@ -1,9 +1,7 @@
-using Moq;
 using RatesProvider.Handler;
 using RatesProvider.Handler.Interfaces;
 using RatesProvider.Handler.Models;
 using RatesProvider.Recipient.Exceptions;
-using RatesProvider.Recipient.Interfaces;
 
 namespace RatesPrioveder.Handler.Tests;
 
@@ -62,16 +60,6 @@ public class ModelBuilderTests
         {
             Assert.Equal(pair.Value, actual.Data[pair.Key]);
         }
-    }
-
-    [Fact]
-    public void BuildPairTest_WhenIncorrectJsonRecieved_ShouldReturnBuildException()
-    {
-        SetUp();
-
-        var passedJsonString = "{\"success\": true, \"timestamp\": 1661181484, \"source\": \"USD\", \"data\": { \"USDRUB\": \"59.874502\", \"USDEUR\": \"1.004425\" }}";
-
-        Assert.Throws<RatesBuildException>(() => _sut.BuildPair<PrimaryRates>(passedJsonString));
     }
 
     [Fact]

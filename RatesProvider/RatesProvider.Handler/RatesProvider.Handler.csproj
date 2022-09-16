@@ -8,7 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="IncredibleBackend" Version="2.0.0" />
+    <PackageReference Include="IncredibleBackend" Version="2.2.1" />
+    <PackageReference Include="IncredibleBackend.Rmq" Version="1.1.4" />
     <PackageReference Include="MassTransit" Version="8.0.6" />
     <PackageReference Include="MassTransit.Newtonsoft" Version="8.0.6" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.0.6" />

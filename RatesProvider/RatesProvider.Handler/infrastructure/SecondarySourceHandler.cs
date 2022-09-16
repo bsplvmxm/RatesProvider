@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using Polly.Retry;
+﻿using IncredibleBackendContracts.Events;
+using Microsoft.Extensions.Logging;
+using Polly;
 using RatesProvider.Handler.Interfaces;
 using RatesProvider.RatesGetter.Infrastructure;
 using RatesProvider.RatesGetter.Interfaces;
-using IncredibleBackendContracts.Events;
 
 namespace RatesProvider.Handler.Infrastructure;
 
@@ -16,7 +16,7 @@ public class SecondarySourceHandler : IRatesSourceHandler
     public SecondarySourceHandler(ILogger logger,
         ISettingsProvider settingsProvider,
         IRatesBuilder ratesBuilder,
-        RetryPolicy retryPolicy)
+        ISyncPolicy retryPolicy)
     {
         _currencyRecipient = new SecondaryRatesGetter(settingsProvider, logger);
         _handleChecker = new SecondaryHandleChecker(logger, ratesBuilder, retryPolicy);
