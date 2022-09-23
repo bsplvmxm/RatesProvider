@@ -5,6 +5,8 @@ using RatesProvider.Handler.Interfaces;
 
 var host = HostBuilder.CreateHostBuilder().Build();
 
+host.Services.CreateScope();
+
 await host.Services.GetService<IImplementation>()!.Run();
 
 while (true)

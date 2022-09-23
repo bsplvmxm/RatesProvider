@@ -15,7 +15,7 @@ namespace RatesProvider.Handler.Extensions;
 
 public static class ServiceCollectionExtension
 {
-    public static void ConfigureDependicies(this IServiceCollection services)
+    public static void ConfigureDependencies(this IServiceCollection services)
     {
         services.AddScoped<IImplementation, Implementation>();
         services.AddScoped<ICurrencyHandler, CurrencyHandler>();
@@ -30,7 +30,10 @@ public static class ServiceCollectionExtension
         services.RegisterConsumersAndProducers(
                 null,
                 null,
-                (cfg) => { cfg.RegisterProducer<NewRatesEvent>(RabbitEndpoint.CurrencyRates); });
+                (cfg) => { cfg.RegisterProducer<NewRatesEvent>(RabbitEndpoint.CurrencyRates); },
+                Environment.GetEnvironmentVariable("RABBIT_LOGIN", EnvironmentVariableTarget.Machine)!,
+                Environment.GetEnvironmentVariable("RABBIT_PASSWORD", EnvironmentVariableTarget.Machine)!,
+                Environment.GetEnvironmentVariable("RABBIT_SERVER", EnvironmentVariableTarget.Machine)!);
     }
 
     public static void ConfigureLogging(this IServiceCollection services)

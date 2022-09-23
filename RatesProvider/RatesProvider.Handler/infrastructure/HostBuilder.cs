@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using RatesProvider.Handler.Extensions;
-using RatesProvider.Recipient.Infrastructure;
 
 namespace RatesProvider.Handler;
 
@@ -11,11 +10,11 @@ public class HostBuilder
         Host.CreateDefaultBuilder()
         .ConfigureAppConfiguration((context, builder) =>
         {
-            builder.SetBasePath(Environment.GetEnvironmentVariable(EnvironmentVirable.BaseDirectory, EnvironmentVariableTarget.Machine)!);
+            builder.SetBasePath(Directory.GetCurrentDirectory());
         })
         .ConfigureServices((context, services) =>
         {
-            services.ConfigureDependicies();
+            services.ConfigureDependencies();
             services.ConfigureMessaging();
             services.ConfigureLogging();
         });
